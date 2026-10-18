@@ -64,7 +64,6 @@ final class RickAndMortyRestApi implements IRickAndMortyRestApi {
     );
   }
 
-  /// Single choke point for every HTTP call (hook logging/metrics here).
   Future<ApiResult<T>> _get<T>(Uri uri, T Function(dynamic json) parse) async {
     try {
       final response = await _client.get(uri).timeout(const Duration(seconds: 15));

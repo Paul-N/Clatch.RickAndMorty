@@ -1,7 +1,5 @@
 abstract class IAppConfig {
 
-  String get openIdHomeUrl;
-
   String get backendHomeUrl;
 
   String get environment;

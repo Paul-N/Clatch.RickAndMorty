@@ -1,37 +1,27 @@
 import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode, kDebugMode;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:rick_and_morty/rest_api/rm_rest_api.dart';
 import 'package:rick_and_morty/services/app_config.dart';
 import 'package:rick_and_morty/services/compilation_environment_app_config.dart';
-import 'package:rick_and_morty/services/os_environment_app_config.dart';
 import 'package:rick_and_morty/services/di.dart';
-import 'package:rick_and_morty/services/native_logger.dart';
 import 'package:rick_and_morty/rick_and_morty_app.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   try {
-    IAppConfig appConfig = _createPlatformSpecificAppConfig();
+    IAppConfig appConfig = CompilationEnvironmentAppConfig();
 
     Logger.root.level = Level.ALL; // defaults to Level.INFO
-    if(Platform.isMacOS && !kDebugMode) {
-      WidgetsFlutterBinding.ensureInitialized();
-      var logger = NativeLogger(bundleIdentifier: appConfig.bundleIdentifier);
-      Logger.root.onRecord.listen((record) {
-        logger.log(record);
-      });
-      Logger.root.info('Native logging initialized');
-    } else {
-      Logger.root.onRecord.listen((record) {
-        // ignore: avoid_print
-        print('${record.level.name}: ${record.time}: ${record.message}');
-      });
-    }
+    Logger.root.onRecord.listen((record) {
+      // ignore: avoid_print
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    });
+
 
     DI.register(Clock());
     DI.register<Logger>(Logger.root);
@@ -61,15 +51,6 @@ void main() {
 //   });
 // }
 
-IAppConfig _createPlatformSpecificAppConfig()
-{
-  if (Platform.isMacOS) {
-    return kReleaseMode
-        ? CompilationEnvironmentAppConfig()
-        : OSEnvironmentAppConfig();
-  }
-  return CompilationEnvironmentAppConfig();
-}
 //-------------
 
 /*void main() {
