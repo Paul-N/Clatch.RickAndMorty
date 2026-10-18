@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'package:rick_and_morty/dto/endpoints_response.dart';
 import 'package:rick_and_morty/rest_api/rm_rest_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -45,7 +44,6 @@ void main() {
         baseUrl: 'https://rickandmortyapi.com',
       );
 
-      final testName = 'Rick';
       final result = await api.getCharacterById(2);
 
       expect(result.is1, isTrue);
