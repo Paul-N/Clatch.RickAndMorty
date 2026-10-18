@@ -8,14 +8,14 @@ part of 'endpoints_response.dart';
 
 _EndpointsResponse _$EndpointsResponseFromJson(Map<String, dynamic> json) =>
     _EndpointsResponse(
-      characters: json['characters'] as String,
-      locations: json['locations'] as String,
-      episodes: json['episodes'] as String,
+      characters: Uri.parse(json['characters'] as String),
+      locations: Uri.parse(json['locations'] as String),
+      episodes: Uri.parse(json['episodes'] as String),
     );
 
 Map<String, dynamic> _$EndpointsResponseToJson(_EndpointsResponse instance) =>
     <String, dynamic>{
-      'characters': instance.characters,
-      'locations': instance.locations,
-      'episodes': instance.episodes,
+      'characters': instance.characters.toString(),
+      'locations': instance.locations.toString(),
+      'episodes': instance.episodes.toString(),
     };

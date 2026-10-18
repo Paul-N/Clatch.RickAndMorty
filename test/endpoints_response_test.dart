@@ -14,9 +14,9 @@ void main() {
 
       expect(result.is1, isTrue);
       final response = result.as1;
-      expect(response.characters, 'https://rickandmortyapi.com/api/character');
-      expect(response.locations, 'https://rickandmortyapi.com/api/location');
-      expect(response.episodes, 'https://rickandmortyapi.com/api/episode');
+      expect(response.characters, Uri.parse('https://rickandmortyapi.com/api/character'));
+      expect(response.locations, Uri.parse('https://rickandmortyapi.com/api/location'));
+      expect(response.episodes, Uri.parse('https://rickandmortyapi.com/api/episode'));
     });
   });
 }

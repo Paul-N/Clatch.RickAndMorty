@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'endpoints_response.dart';
@@ -9,13 +9,14 @@ part of 'endpoints_response.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$EndpointsResponse {
 
-@JsonKey(name: 'characters') String get characters;@JsonKey(name: 'locations') String get locations;@JsonKey(name: 'episodes') String get episodes;
+@JsonKey(name: 'characters') Uri get characters;@JsonKey(name: 'locations') Uri get locations;@JsonKey(name: 'episodes') Uri get episodes;
 /// Create a copy of EndpointsResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,21 @@ $EndpointsResponseCopyWith<EndpointsResponse> get copyWith => _$EndpointsRespons
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EndpointsResponse&&(identical(other.characters, characters) || other.characters == characters)&&(identical(other.locations, locations) || other.locations == locations)&&(identical(other.episodes, episodes) || other.episodes == episodes));
+  final _this = this as EndpointsResponse;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EndpointsResponse&&(identical(other.characters, _this.characters) || other.characters == _this.characters)&&(identical(other.locations, _this.locations) || other.locations == _this.locations)&&(identical(other.episodes, _this.episodes) || other.episodes == _this.episodes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,characters,locations,episodes);
+int get hashCode {
+  final _this = this as EndpointsResponse;
+  return Object.hash(runtimeType,_this.characters,_this.locations,_this.episodes);
+}
 
 @override
 String toString() {
-  return 'EndpointsResponse(characters: $characters, locations: $locations, episodes: $episodes)';
+  final _this = this as EndpointsResponse;
+  return 'EndpointsResponse(characters: ${_this.characters}, locations: ${_this.locations}, episodes: ${_this.episodes})';
 }
 
 
@@ -48,7 +54,7 @@ abstract mixin class $EndpointsResponseCopyWith<$Res>  {
   factory $EndpointsResponseCopyWith(EndpointsResponse value, $Res Function(EndpointsResponse) _then) = _$EndpointsResponseCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'characters') String characters,@JsonKey(name: 'locations') String locations,@JsonKey(name: 'episodes') String episodes
+@JsonKey(name: 'characters') Uri characters,@JsonKey(name: 'locations') Uri locations,@JsonKey(name: 'episodes') Uri episodes
 });
 
 
@@ -66,11 +72,11 @@ class _$EndpointsResponseCopyWithImpl<$Res>
 /// Create a copy of EndpointsResponse
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? characters = null,Object? locations = null,Object? episodes = null,}) {
-  return _then(_self.copyWith(
+  return _then(EndpointsResponse(
 characters: null == characters ? _self.characters : characters // ignore: cast_nullable_to_non_nullable
-as String,locations: null == locations ? _self.locations : locations // ignore: cast_nullable_to_non_nullable
-as String,episodes: null == episodes ? _self.episodes : episodes // ignore: cast_nullable_to_non_nullable
-as String,
+as Uri,locations: null == locations ? _self.locations : locations // ignore: cast_nullable_to_non_nullable
+as Uri,episodes: null == episodes ? _self.episodes : episodes // ignore: cast_nullable_to_non_nullable
+as Uri,
   ));
 }
 
@@ -155,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'characters')  String characters, @JsonKey(name: 'locations')  String locations, @JsonKey(name: 'episodes')  String episodes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'characters')  Uri characters, @JsonKey(name: 'locations')  Uri locations, @JsonKey(name: 'episodes')  Uri episodes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EndpointsResponse() when $default != null:
 return $default(_that.characters,_that.locations,_that.episodes);case _:
@@ -176,7 +182,7 @@ return $default(_that.characters,_that.locations,_that.episodes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'characters')  String characters, @JsonKey(name: 'locations')  String locations, @JsonKey(name: 'episodes')  String episodes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'characters')  Uri characters, @JsonKey(name: 'locations')  Uri locations, @JsonKey(name: 'episodes')  Uri episodes)  $default,) {final _that = this;
 switch (_that) {
 case _EndpointsResponse():
 return $default(_that.characters,_that.locations,_that.episodes);case _:
@@ -196,7 +202,7 @@ return $default(_that.characters,_that.locations,_that.episodes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'characters')  String characters, @JsonKey(name: 'locations')  String locations, @JsonKey(name: 'episodes')  String episodes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'characters')  Uri characters, @JsonKey(name: 'locations')  Uri locations, @JsonKey(name: 'episodes')  Uri episodes)?  $default,) {final _that = this;
 switch (_that) {
 case _EndpointsResponse() when $default != null:
 return $default(_that.characters,_that.locations,_that.episodes);case _:
@@ -214,9 +220,9 @@ class _EndpointsResponse implements EndpointsResponse {
   const _EndpointsResponse({@JsonKey(name: 'characters') required this.characters, @JsonKey(name: 'locations') required this.locations, @JsonKey(name: 'episodes') required this.episodes});
   factory _EndpointsResponse.fromJson(Map<String, dynamic> json) => _$EndpointsResponseFromJson(json);
 
-@override@JsonKey(name: 'characters') final  String characters;
-@override@JsonKey(name: 'locations') final  String locations;
-@override@JsonKey(name: 'episodes') final  String episodes;
+@override@JsonKey(name: 'characters') final  Uri characters;
+@override@JsonKey(name: 'locations') final  Uri locations;
+@override@JsonKey(name: 'episodes') final  Uri episodes;
 
 /// Create a copy of EndpointsResponse
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +237,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EndpointsResponse&&(identical(other.characters, characters) || other.characters == characters)&&(identical(other.locations, locations) || other.locations == locations)&&(identical(other.episodes, episodes) || other.episodes == episodes));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EndpointsResponse&&(identical(other.characters, characters) || other.characters == characters)&&(identical(other.locations, locations) || other.locations == locations)&&(identical(other.episodes, episodes) || other.episodes == episodes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,characters,locations,episodes);
+int get hashCode {
+    return Object.hash(runtimeType,characters,locations,episodes);
+}
 
 @override
 String toString() {
-  return 'EndpointsResponse(characters: $characters, locations: $locations, episodes: $episodes)';
+    return 'EndpointsResponse(characters: $characters, locations: $locations, episodes: $episodes)';
 }
 
 
@@ -251,7 +259,7 @@ abstract mixin class _$EndpointsResponseCopyWith<$Res> implements $EndpointsResp
   factory _$EndpointsResponseCopyWith(_EndpointsResponse value, $Res Function(_EndpointsResponse) _then) = __$EndpointsResponseCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'characters') String characters,@JsonKey(name: 'locations') String locations,@JsonKey(name: 'episodes') String episodes
+@JsonKey(name: 'characters') Uri characters,@JsonKey(name: 'locations') Uri locations,@JsonKey(name: 'episodes') Uri episodes
 });
 
 
@@ -271,9 +279,9 @@ class __$EndpointsResponseCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? characters = null,Object? locations = null,Object? episodes = null,}) {
   return _then(_EndpointsResponse(
 characters: null == characters ? _self.characters : characters // ignore: cast_nullable_to_non_nullable
-as String,locations: null == locations ? _self.locations : locations // ignore: cast_nullable_to_non_nullable
-as String,episodes: null == episodes ? _self.episodes : episodes // ignore: cast_nullable_to_non_nullable
-as String,
+as Uri,locations: null == locations ? _self.locations : locations // ignore: cast_nullable_to_non_nullable
+as Uri,episodes: null == episodes ? _self.episodes : episodes // ignore: cast_nullable_to_non_nullable
+as Uri,
   ));
 }
 
