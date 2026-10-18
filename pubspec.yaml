@@ -45,6 +45,9 @@ dependencies:
   problem_details: ^0.0.2 # https://github.com/bytes7bytes7/problem_details/blob/master/resources/l10n/ru_RU/README.md
 
 
+  #rick_and_morty_api: ^0.1.3 abandoned and can not be installed in modern Flutter app
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

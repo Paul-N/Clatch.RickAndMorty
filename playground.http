@@ -1,0 +1,14 @@
+# @name first ever call
+GET https://rickandmortyapi.com/api
+Accept: application/json
+
+> {%
+  // Save a field from the JSON response into a client global variable
+  client.global.set("characters_uri", response.body.characters);
+%}
+
+###
+
+GET {{characters_uri}}
+Accept: application/json
+
