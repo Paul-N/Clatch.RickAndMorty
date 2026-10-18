@@ -7,8 +7,23 @@ Accept: application/json
   client.global.set("characters_uri", response.body.characters);
 %}
 
-###
-
+### all characters
 GET {{characters_uri}}
 Accept: application/json
 
+### characters filtered by name
+GET {{characters_uri}}?name=Rick
+Accept: application/json
+
+> {%
+  // Save a field from the JSON response into a client global variable
+  client.global.set("next_uri_with_name", response.body.info.next);
+%}
+
+### characters filtered by name with page number
+GET {{next_uri_with_name}}
+Accept: application/json
+
+### character by id
+GET {{characters_uri}}/2
+Accept: application/json

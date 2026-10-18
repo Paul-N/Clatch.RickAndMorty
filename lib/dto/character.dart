@@ -61,3 +61,33 @@ sealed class Character with _$Character implements ResourceBase {
   factory Character.fromJson(Map<String, dynamic> json) =>
       _$CharacterFromJson(json);
 }
+
+@JsonSerializable(includeIfNull: false)
+class CharacterFilter {
+  String? name;
+  String? type;
+  String? species;
+  CharacterStatus? status;
+  CharacterGender? gender;
+  //int? page;
+
+  CharacterFilter({
+    this.name,
+    this.status,
+    this.species,
+    this.type,
+    this.gender,
+  });
+
+  // Map<String, Object> toQuery() => {
+  //   if(name != null) 'name': '$name',
+  //   if(type != null) 'type': '$type',
+  //   if(species != null) 'species': '$species',
+  //   //if(species != null) 'species': '$species',
+  // };
+
+  Map<String, dynamic> toJson() => _$CharacterFilterToJson(this);
+
+  Map<String, String> toQuery() =>
+      toJson().map((k, v) => MapEntry(k, v.toString()));
+}

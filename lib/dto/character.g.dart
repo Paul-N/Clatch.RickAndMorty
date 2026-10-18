@@ -6,6 +6,37 @@ part of 'character.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+CharacterFilter _$CharacterFilterFromJson(Map<String, dynamic> json) =>
+    CharacterFilter(
+      name: json['name'] as String?,
+      status: $enumDecodeNullable(_$CharacterStatusEnumMap, json['status']),
+      species: json['species'] as String?,
+      type: json['type'] as String?,
+      gender: $enumDecodeNullable(_$CharacterGenderEnumMap, json['gender']),
+    );
+
+Map<String, dynamic> _$CharacterFilterToJson(CharacterFilter instance) =>
+    <String, dynamic>{
+      'name': ?instance.name,
+      'type': ?instance.type,
+      'species': ?instance.species,
+      'status': ?_$CharacterStatusEnumMap[instance.status],
+      'gender': ?_$CharacterGenderEnumMap[instance.gender],
+    };
+
+const _$CharacterStatusEnumMap = {
+  CharacterStatus.alive: 'Alive',
+  CharacterStatus.dead: 'Dead',
+  CharacterStatus.unknown: 'unknown',
+};
+
+const _$CharacterGenderEnumMap = {
+  CharacterGender.female: 'Female',
+  CharacterGender.male: 'Male',
+  CharacterGender.genderless: 'Genderless',
+  CharacterGender.unknown: 'unknown',
+};
+
 _CharacterLocation _$CharacterLocationFromJson(Map<String, dynamic> json) =>
     _CharacterLocation(
       name: json['name'] as String,
@@ -55,16 +86,3 @@ Map<String, dynamic> _$CharacterToJson(_Character instance) =>
       'image': instance.image,
       'episode': instance.episode,
     };
-
-const _$CharacterStatusEnumMap = {
-  CharacterStatus.alive: 'Alive',
-  CharacterStatus.dead: 'Dead',
-  CharacterStatus.unknown: 'unknown',
-};
-
-const _$CharacterGenderEnumMap = {
-  CharacterGender.female: 'Female',
-  CharacterGender.male: 'Male',
-  CharacterGender.genderless: 'Genderless',
-  CharacterGender.unknown: 'unknown',
-};
