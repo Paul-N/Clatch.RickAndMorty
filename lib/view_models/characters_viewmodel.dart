@@ -5,14 +5,14 @@ import 'characters/character_item_viewmodel.dart';
 
 final class CharactersViewModel extends ChangeNotifier {
   final IRickAndMortyRestApi _restApi;
-  late AsyncCommand0 loadBooking;
+  late AsyncCommand0 loadCommand;
 
-  List<CharacterItemViewModel> _chats = [];
+  List<CharacterItemViewModel> _characters = [];
 
-  List<CharacterItemViewModel> get chats => _chats;
+  List<CharacterItemViewModel> get characters => _characters;
 
   CharactersViewModel({required this._restApi}) {
-    loadBooking = AsyncCommand0(_load)..execute();
+    loadCommand = AsyncCommand0(_load)..execute();
   }
 
   Future<void> _load() async {
@@ -20,7 +20,7 @@ final class CharactersViewModel extends ChangeNotifier {
       final chatListResponseRes = await _restApi.getCharacters();
       chatListResponseRes.split(
             (chatListResponse) {
-          _chats = chatListResponse.results.map((charactersItem) => CharacterItemViewModel.fromChatItem(charactersItem)).toList();
+          _characters = chatListResponse.results.map((charactersItem) => CharacterItemViewModel.fromChatItem(charactersItem)).toList();
         },
             (problem) {},
             (fail) {},

@@ -7,13 +7,16 @@ import 'package:rick_and_morty/rest_api/rm_rest_api.dart'; // IRickAndMortyRestA
 import 'package:rick_and_morty/dto/character.dart';
 import 'package:rick_and_morty/dto/paged_response.dart';
 
+import '../view_models/characters_viewmodel.dart';
+
 /// Searchable, infinitely scrolling list of characters (Material 3).
 ///
 /// The search text is sent to the API as a name filter (debounced), and the
 /// next page is requested through `info.next` when the user nears the end.
 class CharactersPage extends StatefulWidget {
-  const CharactersPage({super.key, required this.api, this.onSelected});
+  const CharactersPage({super.key, required this.api, required this.viewModel, this.onSelected});
 
+  final CharactersViewModel viewModel;
   final IRickAndMortyRestApi api;
   final ValueChanged<Character>? onSelected;
 
