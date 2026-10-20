@@ -5,15 +5,18 @@ import 'package:extension_type_unions/extension_type_unions.dart';
 import 'package:rick_and_morty/dto/character.dart';
 import 'package:rick_and_morty/dto/paged_response.dart';
 import 'package:rick_and_morty/model/results.dart';
+import 'package:rick_and_morty/rest_api/api_exception.dart';
 import '../rest_api/rickandmorty_rest_api.dart';
 
-typedef ServiceOperation<T> = CancelableOperation<Union2<T, Fail>>;
+typedef MaybeSuccess = Union3<Success, NotFound, Fail>;
+typedef MaybeData<T> = Union3<Data<T>, NotFound, Fail>;
+typedef CancelableMaybeData<T> = CancelableOperation<MaybeData<T>>;
+typedef CancelableMaybeSuccess = CancelableOperation<MaybeSuccess>;
 
 abstract interface class IRickAndMortyService {
-
-  ServiceOperation<PagedResponse<Character>> getCharacters({CharacterFilter? filter});
-  ServiceOperation<PagedResponse<Character>> getCharactersByUri(Uri uri);
-  ServiceOperation<Character> getCharacterById(int id);
+  CancelableMaybeData<PagedResponse<Character>> getCharacters({CharacterFilter? filter});
+  CancelableMaybeData<PagedResponse<Character>> getCharactersByUri(Uri uri);
+  CancelableMaybeData<Character> getCharacterById(int id);
   void cancelPending();
 }
 
@@ -23,9 +26,9 @@ extension ServiceFail on Fail {
   bool get isCanceled => identical(this, _canceled);
 }
 
-extension ServiceOperationResult<T> on ServiceOperation<T> {
-  Future<Union2<T, Fail>> get result async =>
-      (await valueOrCancellation(_canceled.u22))!;
+extension ServiceOperationResult<T> on CancelableMaybeData<T> {
+  Future<MaybeData<T>> get result async =>
+      (await valueOrCancellation(_canceled.u33))!;
 }
 
 final class RickAndMortyService implements IRickAndMortyService {
@@ -35,15 +38,15 @@ final class RickAndMortyService implements IRickAndMortyService {
   CancelableOperation<Object?>? _latestList;
 
   @override
-  ServiceOperation<PagedResponse<Character>> getCharacters({CharacterFilter? filter}) =>
+  CancelableMaybeData<PagedResponse<Character>> getCharacters({CharacterFilter? filter}) =>
       _run(() => _client.getCharacters(filter: filter), latestWins: true);
 
   @override
-  ServiceOperation<PagedResponse<Character>> getCharactersByUri(Uri uri) =>
+  CancelableMaybeData<PagedResponse<Character>> getCharactersByUri(Uri uri) =>
       _run(() => _client.getCharactersByUri(uri), latestWins: true);
 
   @override
-  ServiceOperation<Character> getCharacterById(int id) =>
+  CancelableMaybeData<Character> getCharacterById(int id) =>
       _run(() => _client.getCharacterById(id));
 
   @override
@@ -51,28 +54,60 @@ final class RickAndMortyService implements IRickAndMortyService {
 
   /// Canceling only stops this caller from receiving the result: the REST API
   /// has no abort hook yet, so the HTTP request itself still runs to the end.
-  ServiceOperation<T> _run<T>(
+  CancelableMaybeData<T> _run<T>(
       Future<ApiResult<T>> Function() call, {
         bool latestWins = false,
       }) {
     if (latestWins) _latestList?.cancel();
-    final completer = CancelableCompleter<Union2<T, Fail>>();
+    final completer = CancelableCompleter<MaybeData<T>>();
     completer.complete(call().then((r) => _toService(r)));
     final operation = completer.operation;
     if (latestWins) _latestList = operation;
     return operation;
   }
 
-  Union2<T, Fail> _toService<T>(ApiResult<T> result) => result.split<Union2<T, Fail>>(
-        (value) => value.u21,
-        (problem) => Fail.withDescription(
-        problem.title ?? 'The server rejected the request.')
-        .u22,
-        (error) => Fail.withDescription(_describe(error)).u22,
+  MaybeData<T> _toService<T>(ApiResult<T> result) => result.split<MaybeData<T>>(
+        (value) => Data(value).u31,
+        (problem) => Fail.withDescription(problem.title ?? 'The server rejected the request.').u33,
+        (error) {
+          if (error is ApiException) {
+            if (error.statusCode == 404) {
+              return error.oneLineError != null ? NotFound.withDescription(error.oneLineError!).u32 : NotFound().u32;
+            }
+            else {
+              return Fail.withDescription(_describeApiException(error)).u33;
+            }
+          }
+          return Fail.withDescription(_describe(error)).u33;
+        },
   );
 
   String _describe(Exception error) => switch (error) {
     TimeoutException() => 'The request timed out.',
+    ApiException apiExc => _describeApiException(apiExc),
     _ => error.toString(),
   };
+
+  String _describeApiException(ApiException error) {
+    if(error.oneLineError != null) {
+      return error.oneLineError!;
+    }
+    else {
+      return error.toString();
+    }
+  }
+}
+
+extension on ApiException {
+  String? get oneLineError {
+    if(body?.is1 == true && body!.as1.keys.contains('error')) {
+      return body!.as1['error'];
+    } else if(body?.is3 == true) {
+      return body!.as3;
+    } else if(body == null) {
+      return message;
+    } else {
+      return null;
+    }
+  }
 }

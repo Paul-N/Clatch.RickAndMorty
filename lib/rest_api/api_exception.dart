@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class ApiException implements Exception {
   final int statusCode;
-  final String message;
+  late final String message;
   final Union3<Map<String, dynamic>, List<dynamic>, String>? body;
 
   ApiException({

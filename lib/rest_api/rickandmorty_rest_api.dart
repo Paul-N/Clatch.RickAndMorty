@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
+//import 'dart:math';
 import 'package:extension_type_unions/extension_type_unions.dart';
 import 'package:http/http.dart';
 import 'package:problem_details/problem_details.dart';
@@ -48,17 +48,17 @@ final class RickAndMortyRestApi implements IRickAndMortyRestApi {
     );
   }
 
-  //@override
-  // Future<ApiResult<PagedResponse<Character>>> getCharactersByUri(Uri uri) =>
-  //     _get(uri, (j) => PagedResponse<Character>.fromJson(
-  //         j, (o) => Character.fromJson(o as Map<String, dynamic>)));
-
   @override
-  Future<ApiResult<PagedResponse<Character>>> getCharactersByUri(Uri uri) async {
-    if (Random().nextBool()) {
-      return ApiException(statusCode: 0, message: 'Simulated 50% failure').u33;
-    } return _get(uri, (j) => PagedResponse.fromJson( j, (o) => Character.fromJson(o as Map<String, dynamic>)));
-  }
+  Future<ApiResult<PagedResponse<Character>>> getCharactersByUri(Uri uri) =>
+      _get(uri, (j) => PagedResponse<Character>.fromJson(
+          j, (o) => Character.fromJson(o as Map<String, dynamic>)));
+
+  // @override
+  // Future<ApiResult<PagedResponse<Character>>> getCharactersByUri(Uri uri) async {
+  //   if (Random().nextBool()) {
+  //     return ApiException(statusCode: 0, message: 'Simulated 50% failure').u33;
+  //   } return _get(uri, (j) => PagedResponse.fromJson( j, (o) => Character.fromJson(o as Map<String, dynamic>)));
+  // }
 
   @override
   Future<ApiResult<Character>> getCharacterById(int id) async {
@@ -77,7 +77,6 @@ final class RickAndMortyRestApi implements IRickAndMortyRestApi {
       final response = await _client.get(uri).timeout(const Duration(seconds: 15));
       final body = utf8.decode(response.bodyBytes);
       if (response.statusCode == 200) return parse(jsonDecode(body)).u31;
-      //if (response.statusCode >= 400 && response.statusCode <= 499 && ) return Exception('Not found').u33;
       if (response.hasProblemDetails) return ProblemDetails.fromJson(jsonDecode(body)).u32;
       return ApiException.fromResponse(response).u33;
     } on Exception catch (e) {

@@ -25,6 +25,9 @@ final class CharactersViewModel extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
+  String? _notFoundMessage;
+  String? get notFoundMessage => _notFoundMessage;
+
   Uri? _next;
   Uri? get next => _next;
 
@@ -50,10 +53,9 @@ final class CharactersViewModel extends ChangeNotifier {
     notifyListeners();
 
     final outcome = await (firstPage
-        ? _service.getCharacters(
-        filter: _query?.isEmpty != false ? null : CharacterFilter(name: _query))
+        ? _service.getCharacters(filter: _query?.isEmpty != false ? null : CharacterFilter(name: _query))
         : _service.getCharactersByUri(_next!))
-        .result;
+        .value;
 
     // Superseded by a newer call (or canceled on dispose): that call owns the
     // state now, so leave `_loading` and the lists alone.
@@ -61,14 +63,12 @@ final class CharactersViewModel extends ChangeNotifier {
 
     _loading = false;
     outcome.split(
-          (page) {
-        _characters.addAll(
-          page.results
-              .map((c) => CharacterItemViewModel.fromChatItem(c)),
-        );
-        _next = _nextOf(page);
-      },
-          (fail) {
+          (success) {
+            _characters.addAll(success.value.results.map((c) => CharacterItemViewModel.fromChatItem(c)));
+            _next = _nextOf(success.value);
+      }, (notFound){
+          _notFoundMessage = notFound.description;
+      }, (fail) {
         _error = fail.description ?? 'Something went wrong.';
       },
     );

@@ -85,9 +85,16 @@ class _CharactersPageState extends State<CharactersPage> {
   Widget _buildBody() {
     final items = _vm.characters;
     final error = _vm.error;
+    final notFoundMessage = _vm.notFoundMessage;
 
     if (items.isEmpty) {
       if (_vm.loading) return const Center(child: CircularProgressIndicator());
+      if(notFoundMessage != null) {
+        return _Message(
+          icon: Icons.search_off,
+          title: notFoundMessage,
+        );
+      }
       if (error != null) {
         return _Message(
           icon: Icons.cloud_off,

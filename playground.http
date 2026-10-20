@@ -24,6 +24,14 @@ Accept: application/json
 GET {{next_uri_with_name}}
 Accept: application/json
 
+### characters non existed
+GET {{characters_uri}}?name=NONEXISTED
+Accept: application/json
+
 ### character by id
 GET {{characters_uri}}/2
+Accept: application/json
+
+### non existed api
+GET https://rickandmortyapi.com/api/nonexisted
 Accept: application/json
