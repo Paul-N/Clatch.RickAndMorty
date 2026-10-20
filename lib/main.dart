@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:rick_and_morty/rest_api/rm_rest_api.dart';
+import 'package:rick_and_morty/rest_api/rickandmorty_rest_api.dart';
 import 'package:rick_and_morty/services/app_config.dart';
 import 'package:rick_and_morty/services/compilation_environment_app_config.dart';
 import 'package:rick_and_morty/services/di.dart';
 import 'package:rick_and_morty/rick_and_morty_app.dart';
+import 'package:rick_and_morty/services/rickandmorty_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -29,6 +29,9 @@ void main() {
     DI.register<IRickAndMortyRestApi>(RickAndMortyRestApi(
       client: DI.resolveOrCrash<http.Client>(),
       baseUrl: appConfig.backendHomeUrl,
+    ));
+    DI.register<IRickAndMortyService>(RickAndMortyService(
+      client: DI.resolveOrCrash<IRickAndMortyRestApi>()
     ));
     DI.register<IAppConfig>(appConfig);
     runApp(RickAndMortyApp());
