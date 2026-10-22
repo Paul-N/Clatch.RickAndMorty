@@ -30,11 +30,12 @@ void main() {
 
     DI.register(Clock());
     DI.register<Logger>(Logger.root);
-    final httpClient = ThrottledHttpClient(_createPlatformClient(), minInterval: const Duration(milliseconds: 335));
+    final httpClient = ThrottledHttpClient(_createPlatformClient(), DI.resolveOrCrash<Clock>(), minInterval: const Duration(milliseconds: 335));
     DI.register<http.Client>(httpClient);
     DI.register<IRickAndMortyRestApi>(RickAndMortyRestApi(
       client: DI.resolveOrCrash<http.Client>(),
       baseUrl: appConfig.backendHomeUrl,
+      clock: DI.resolveOrCrash<Clock>(),
     ));
     DI.register<IRickAndMortyService>(RickAndMortyService(
       client: DI.resolveOrCrash<IRickAndMortyRestApi>()

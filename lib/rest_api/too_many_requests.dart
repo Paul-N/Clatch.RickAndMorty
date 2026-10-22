@@ -14,13 +14,13 @@ final class TooManyRequestsErrorHeaders {
   });
 
   /// Expects lower-case keys, as `Response.headers` provides.
-  factory TooManyRequestsErrorHeaders.fromHeaders(Map<String, String> headers) {
+  factory TooManyRequestsErrorHeaders.fromHeaders(Map<String, String> headers, DateTime now) {
     final seconds = int.tryParse(headers['retry-after']?.trim() ?? '');
     final date = _tryHttpDate(headers['date']);
     final retryDate = _tryHttpDate(headers['retry-after']);
     final retryAfter = seconds != null
         ? Duration(seconds: seconds)
-        : retryDate?.difference(date ?? DateTime.now());
+        : retryDate?.difference(date ?? now);
     return TooManyRequestsErrorHeaders(
       retryAfter: retryAfter != null && retryAfter.isNegative
           ? Duration.zero

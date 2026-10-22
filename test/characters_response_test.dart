@@ -1,7 +1,10 @@
+import 'package:clock/clock.dart';
 import 'package:http/http.dart' as http;
 import 'package:rick_and_morty/rest_api/api_errors.dart';
 import 'package:rick_and_morty/infrastructure/rickandmorty_rest_api.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+final _clock = Clock();
 
 void main() {
   group('getCharacters', () {
@@ -9,6 +12,7 @@ void main() {
       final api = RickAndMortyRestApi(
         client: http.Client(),
         baseUrl: 'https://rickandmortyapi.com',
+        clock: _clock,
       );
 
       final result = await api.getCharacters();
@@ -25,6 +29,7 @@ void main() {
       final api = RickAndMortyRestApi(
         client: http.Client(),
         baseUrl: 'https://rickandmortyapi.com',
+        clock: _clock,
       );
 
       final testName = 'Rick';
@@ -43,6 +48,7 @@ void main() {
       final api = RickAndMortyRestApi(
         client: http.Client(),
         baseUrl: 'https://rickandmortyapi.com',
+        clock: _clock,
       );
 
       final testName = 'NEVER_EXISTED';
@@ -62,6 +68,7 @@ void main() {
       final api = RickAndMortyRestApi(
         client: http.Client(),
         baseUrl: 'https://rickandmortyapi.com',
+        clock: _clock,
       );
 
       final result = await api.getCharacterById(2);

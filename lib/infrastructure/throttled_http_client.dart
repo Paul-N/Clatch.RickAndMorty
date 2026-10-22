@@ -2,24 +2,21 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:clock/clock.dart';
 import 'package:http/http.dart';
 
 import '../rest_api/api_errors.dart';
-import '../rest_api/low_priority.dart'; // CloudflareTooManyRequestsError
+import '../rest_api/low_priority.dart';
 
 enum RequestPriority { high, low }
 
 /// The server is rate limiting us and this request can not (or should not) wait
 /// until [retryAt].
 final class RateLimitedException implements Exception {
-  const RateLimitedException(this.retryAt);
+  RateLimitedException(DateTime retryAt, DateTime now)
+      : remaining = retryAt.difference(now).isNegative ? Duration.zero : retryAt.difference(now);
 
-  final DateTime retryAt;
-
-  Duration get remaining {
-    final left = retryAt.difference(DateTime.now());
-    return left.isNegative ? Duration.zero : left;
-  }
+  final Duration remaining;
 
   @override
   String toString() => 'RateLimitedException: try again in ${remaining.inSeconds}s';
@@ -47,7 +44,7 @@ final class RateLimitedException implements Exception {
 /// that the native HTTP cache answers, because that can't be told up front.
 final class ThrottledHttpClient extends BaseClient {
   ThrottledHttpClient(
-      this._inner, {
+      this._inner, this._clock, {
         this.maxConcurrent = 4,
         this.reservedForHigh = 1,
         this.minInterval = const Duration(milliseconds: 200),
@@ -61,6 +58,7 @@ final class ThrottledHttpClient extends BaseClient {
       }) : _interval = minInterval;
 
   final Client _inner;
+  final Clock _clock;
   final int maxConcurrent;
   final int reservedForHigh;
   final Duration minInterval;
@@ -95,7 +93,7 @@ final class ThrottledHttpClient extends BaseClient {
 
     // Don't queue what could not be sent within its patience anyway.
     if (_remainingPause() > _maxWaitFor(priority)) {
-      return Future.error(RateLimitedException(_pausedUntil!));
+      return Future.error(RateLimitedException(_pausedUntil!, _clock.now()));
     }
 
     final job = _Job(request, priority);
@@ -122,7 +120,7 @@ final class ThrottledHttpClient extends BaseClient {
       final job = _nextJob();
       if (job == null) return;
 
-      final now = DateTime.now();
+      final now = _clock.now();
       final pausedUntil = _pausedUntil;
       final readyAt = pausedUntil != null && pausedUntil.isAfter(_nextStart)
           ? pausedUntil
@@ -168,10 +166,10 @@ final class ThrottledHttpClient extends BaseClient {
 
   Future<void> _onRateLimited(_Job job, StreamedResponse streamed) async {
     // A 429 body is small; buffer it to read the Cloudflare hint.
-    final error = CloudflareTooManyRequestsError.fromResponse(await Response.fromStream(streamed));
+    final error = CloudflareTooManyRequestsError.fromResponse(await Response.fromStream(streamed), _clock.now());
     final hint = error.retryAfter(fallback: defaultPause);
 
-    final now = DateTime.now();
+    final now = _clock.now();
     final current = _pausedUntil;
     // Only a request sent after the previous pause ended is a new strike:
     // stragglers that were already in flight must not escalate the backoff.
@@ -193,7 +191,7 @@ final class ThrottledHttpClient extends BaseClient {
       job.attempt++;
       _queueFor(job.priority).addFirst(job); // retried first, so JSON stays ASAP
     } else {
-      job.completer.completeError(RateLimitedException(resume));
+      job.completer.completeError(RateLimitedException(resume, _clock.now()));
     }
     _failWaiting();
   }
@@ -211,12 +209,12 @@ final class ThrottledHttpClient extends BaseClient {
   void _failWaiting() {
     final until = _pausedUntil;
     if (until == null) return;
-    final remaining = until.difference(DateTime.now());
+    final remaining = until.difference(_clock.now());
     for (final priority in RequestPriority.values) {
       if (remaining <= _maxWaitFor(priority)) continue;
       final queue = _queueFor(priority);
       for (final job in queue) {
-        job.completer.completeError(RateLimitedException(until));
+        job.completer.completeError(RateLimitedException(until, _clock.now()));
       }
       queue.clear();
     }
@@ -225,7 +223,7 @@ final class ThrottledHttpClient extends BaseClient {
   Duration _remainingPause() {
     final until = _pausedUntil;
     if (until == null) return Duration.zero;
-    final left = until.difference(DateTime.now());
+    final left = until.difference(_clock.now());
     return left.isNegative ? Duration.zero : left;
   }
 

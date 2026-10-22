@@ -81,10 +81,10 @@ final class CloudflareTooManyRequestsError implements ApiError {
     required this.details,
   });
 
-  factory CloudflareTooManyRequestsError.fromResponse(http.Response r) =>
+  factory CloudflareTooManyRequestsError.fromResponse(http.Response r, DateTime now) =>
       CloudflareTooManyRequestsError(
         statusCode: r.statusCode,
-        headers: TooManyRequestsErrorHeaders.fromHeaders(r.headers),
+        headers: TooManyRequestsErrorHeaders.fromHeaders(r.headers, now),
         details: _tryProblem(r),
       );
 

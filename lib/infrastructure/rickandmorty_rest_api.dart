@@ -1,5 +1,6 @@
 import 'dart:convert';
 //import 'dart:math';
+import 'package:clock/clock.dart';
 import 'package:extension_type_unions/extension_type_unions.dart';
 import 'package:http/http.dart';
 import 'package:problem_details/problem_details.dart';
@@ -18,11 +19,12 @@ abstract interface class IRickAndMortyRestApi {
 }
 
 final class RickAndMortyRestApi implements IRickAndMortyRestApi {
-  RickAndMortyRestApi({required this._client, required String baseUrl})
+  RickAndMortyRestApi({required this._client, required String baseUrl, required this._clock})
       : _api = Uri.parse(baseUrl).replace(pathSegments: ['api']);
 
   final Client _client;
   final Uri _api;
+  final Clock _clock;
   Future<ApiResult<EndpointsResponse>>? _endpoints;
 
   @override
@@ -77,7 +79,7 @@ final class RickAndMortyRestApi implements IRickAndMortyRestApi {
       final response = await _client.get(uri, headers: {'Accept': 'application/json'}).timeout(const Duration(seconds: 15));
       final body = utf8.decode(response.bodyBytes);
       if (response.statusCode == 200) return parse(jsonDecode(body)).u31;
-      if (response.statusCode == 429) return CloudflareTooManyRequestsError.fromResponse(response).u33;
+      if (response.statusCode == 429) return CloudflareTooManyRequestsError.fromResponse(response, _clock.now()).u33;
       if (response.hasProblemDetails) return ProblemDetails.fromJson(jsonDecode(body)).u32;
       return ApiResponseError.fromResponse(response).u33;
     } on Exception catch (e) {

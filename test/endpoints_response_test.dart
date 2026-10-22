@@ -1,6 +1,9 @@
+import 'package:clock/clock.dart';
 import 'package:http/http.dart' as http;
 import 'package:rick_and_morty/infrastructure/rickandmorty_rest_api.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+final _clock = Clock();
 
 void main() {
   group('getEndpoints', () {
@@ -8,6 +11,7 @@ void main() {
       final api = RickAndMortyRestApi(
         client: http.Client(),
         baseUrl: 'https://rickandmortyapi.com',
+        clock: _clock,
       );
 
       final result = await api.getEndpoints();
