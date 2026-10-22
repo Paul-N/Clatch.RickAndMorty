@@ -16,7 +16,7 @@ class RickAndMortyApp extends StatelessWidget {
       title: 'Rick and Morty',
       theme: ThemeData(colorSchemeSeed: Colors.teal),
       darkTheme: ThemeData(colorSchemeSeed: Colors.teal, brightness: Brightness.dark),
-      home: CharactersPage(viewModel: CharactersViewModel(service: rmService), httpClient: DI.resolveOrCrash<http.Client>(), onSelected: (c) { /* open details */ }),
+      home: CharactersPage(viewModel: CharactersViewModel(service: rmService), httpClient: DI.resolveOrCrash<http.Client>()),
       navigatorKey: navigatorKey,
     );
   }

@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty/pages/character_details_page.dart';
+import 'package:rick_and_morty/services/rickandmorty_service.dart';
+import 'package:rick_and_morty/view_models/character_details_viewmodel.dart';
 
+import '../services/di.dart';
 import '../ui/http_image.dart';
 import '../view_models/characters/character_item_viewmodel.dart';
 import '../view_models/characters_viewmodel.dart';
 import 'package:http/http.dart' as http;
 
-/// Searchable, infinitely scrolling list of characters (Material 3).
-///
-/// All state and logic live in [CharactersViewModel]; this widget only renders
-/// it and forwards user input. The caller owns (and disposes) the view model.
 class CharactersPage extends StatefulWidget {
-  const CharactersPage({super.key, required this.viewModel, required this._httpClient, this.onSelected});
+  const CharactersPage({super.key, required this.viewModel, required this._httpClient});
 
   final http.Client _httpClient;
   final CharactersViewModel viewModel;
-  final ValueChanged<CharacterItemViewModel>? onSelected;
 
   @override
   State<CharactersPage> createState() => _CharactersPageState();
@@ -130,11 +129,20 @@ class _CharactersPageState extends State<CharactersPage> {
       itemBuilder: (context, i) {
         if (i < items.length) {
           final item = items[i];
-          final onSelected = widget.onSelected;
           return _CharacterTile(
             item,
             client: widget._httpClient,
-            onTap: onSelected == null ? null : () => onSelected(item),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CharacterDetailsPage(
+                  viewModel: CharacterDetailsViewModel(
+                    service: DI.resolveOrCrash<IRickAndMortyService>(),
+                    id: item.id,
+                  ), httpClient: DI.resolveOrCrash<http.Client>(),
+                ),
+              ),
+            )
           );
         }
         return Center(
