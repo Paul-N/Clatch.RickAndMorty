@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:problem_details/problem_details.dart';
 

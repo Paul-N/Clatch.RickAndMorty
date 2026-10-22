@@ -1,0 +1,25 @@
+{
+  "appTitle": "Rick and Morty",
+  "character": "Персонаж",
+
+  "couldNotLoadCharacter": "Не удалось загрузить персонажа",
+  "characterNotFound": "Персонаж не найден",
+  "characterDetailsUnavailable": "Детали персонажа недоступны",
+  "origin": "Происхождение",
+  "lastKnownLocation": "Последнее местоположение",
+  "noLocationDetailsAvailable": "Местоположение неизвестно",
+  "tryAgain": "Повторить",
+
+  "characters": "Персонажи",
+  "searchByName": "Искать по имени",
+  "clearSearch": "Очистить поиск",
+  "couldNotLoadCharacters": "Не удалось загрузить персонажей",
+  "noResultsFor": "Нет результатов для {query}",
+  "noCharactersYet": "Персонажей пока нет",
+  "tryDifferentName": "Попробуйте другое имя.",
+  "couldNotLoadMore": "Не удалось загрузить больше: {error}",
+
+  "characterStatus_alive": "Жив",
+  "characterStatus_dead": "Мертв",
+  "characterStatus_unknown": "Неизвестен"
+}

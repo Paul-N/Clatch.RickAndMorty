@@ -1,5 +1,8 @@
 import 'package:intl/intl.dart';
 
+import '../dto/character.dart';
+import '../l10n/app_localizations.dart';
+
 extension DateTimeRelative on DateTime {
   String toStringRelativeToday([DateTime? now]) {
     final effectiveNow = now ?? DateTime.now();
@@ -17,6 +20,22 @@ extension DateTimeRelative on DateTime {
       return DateFormat.EEEE().format(this);
     } else {
       return DateFormat.yMd().format(this);
+    }
+  }
+}
+
+
+
+extension CharacterStatusLocalization on CharacterStatus {
+
+  String? localize(AppLocalizations localizations) {
+    switch (this) {
+      case CharacterStatus.alive:
+        return localizations.characterStatus_alive;
+      case CharacterStatus.dead:
+        return localizations.characterStatus_dead;
+      case CharacterStatus.unknown:
+        return localizations.characterStatus_unknown;
     }
   }
 }

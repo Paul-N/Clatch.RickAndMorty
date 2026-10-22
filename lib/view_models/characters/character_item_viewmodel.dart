@@ -3,7 +3,7 @@ import '../../util/string_utils.dart';
 
 final class CharacterItemViewModel {
   final String name;
-  final String status;
+  final CharacterStatus status;
   final String userPic;
   final int id;
 
@@ -18,7 +18,7 @@ final class CharacterItemViewModel {
     return CharacterItemViewModel(
       id: c.id,
       name: c.name,
-      status: c.status.toString(), //TODO: localize
+      status: c.status,
       userPic: c.image,
     );
   }

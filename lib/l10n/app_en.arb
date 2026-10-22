@@ -1,0 +1,25 @@
+{
+  "appTitle": "Rick and Morty",
+  "character": "Character",
+
+  "couldNotLoadCharacter": "Couldn’t load character",
+  "characterNotFound": "Character not found",
+  "characterDetailsUnavailable": "Character details are unavailable",
+  "origin": "Origin",
+  "lastKnownLocation": "Last known location",
+  "noLocationDetailsAvailable": "No location details available",
+  "tryAgain": "Try again",
+
+  "characters": "Characters",
+  "searchByName": "Search by name",
+  "clearSearch": "Clear search",
+  "couldNotLoadCharacters": "Couldn’t load characters",
+  "noResultsFor": "No results for {query}",
+  "noCharactersYet": "No characters yet",
+  "tryDifferentName": "Try a different name.",
+  "couldNotLoadMore": "Couldn’t load more: {error}",
+
+  "characterStatus_alive": "Alive",
+  "characterStatus_dead": "Dead",
+  "characterStatus_unknown": "Unknown"
+}

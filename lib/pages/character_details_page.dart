@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:rick_and_morty/dto/character.dart';
+import 'package:rick_and_morty/util/string_utils.dart';
 
+import '../l10n/app_localizations.dart';
 import '../ui/http_image.dart';
 import '../view_models/character_details_viewmodel.dart';
 
@@ -30,7 +33,7 @@ class _CharacterDetailsPageState extends State<CharacterDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Character #${_vm.id}')),
+      appBar: AppBar(title: Text('${AppLocalizations.of(context)!.character} #${_vm.id}')),
       body: ListenableBuilder(
         listenable: _vm,
         builder: (context, _) => _buildBody(context),
@@ -39,6 +42,8 @@ class _CharacterDetailsPageState extends State<CharacterDetailsPage> {
   }
 
   Widget _buildBody(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     if (_vm.loading && _vm.name == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -46,7 +51,7 @@ class _CharacterDetailsPageState extends State<CharacterDetailsPage> {
     if (_vm.error case final error?) {
       return _Message(
         icon: Icons.cloud_off,
-        title: 'Couldn’t load character',
+        title: localizations.couldNotLoadCharacter,
         detail: error,
         onRetry: () => _vm.loadCommand.execute(),
       );
@@ -55,7 +60,7 @@ class _CharacterDetailsPageState extends State<CharacterDetailsPage> {
     if (_vm.notFoundMessage case final message?) {
       return _Message(
         icon: Icons.person_search_outlined,
-        title: 'Character not found',
+        title: localizations.characterNotFound,
         detail: message,
         onRetry: () => _vm.loadCommand.execute(),
       );
@@ -65,7 +70,7 @@ class _CharacterDetailsPageState extends State<CharacterDetailsPage> {
       return _Profile(
         name: name,
         image: _vm.userPic,
-        status: _vm.status,
+        status: _vm.status?.localize(localizations),
         species: _vm.species,
         origin: _vm.origin,
         location: _vm.location,
@@ -75,7 +80,7 @@ class _CharacterDetailsPageState extends State<CharacterDetailsPage> {
 
     return _Message(
       icon: Icons.person_outline,
-      title: 'Character details are unavailable',
+      title: localizations.characterDetailsUnavailable,
       onRetry: () => _vm.loadCommand.execute(),
     );
   }
@@ -104,6 +109,7 @@ class _Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final appLocalizations = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -178,7 +184,7 @@ class _Profile extends StatelessWidget {
                     if (origin case final value?)
                       _DetailRow(
                         icon: Icons.public,
-                        label: 'Origin',
+                        label: appLocalizations.origin,
                         value: value,
                       ),
                     if (origin != null && location != null)
@@ -186,13 +192,13 @@ class _Profile extends StatelessWidget {
                     if (location case final value?)
                       _DetailRow(
                         icon: Icons.location_on_outlined,
-                        label: 'Last known location',
+                        label: appLocalizations.lastKnownLocation,
                         value: value,
                       ),
                     if (origin == null && location == null)
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(20),
-                        child: Text('No location details available'),
+                        child: Text(appLocalizations.noLocationDetailsAvailable),
                       ),
                   ],
                 ),
@@ -309,7 +315,7 @@ class _Message extends StatelessWidget {
               const SizedBox(height: 16),
               FilledButton.tonal(
                 onPressed: onRetry,
-                child: const Text('Try again'),
+                child: Text(AppLocalizations.of(context)!.tryAgain),
               ),
             ],
           ],

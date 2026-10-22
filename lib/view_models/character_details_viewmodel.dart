@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:rick_and_morty/dto/character.dart';
+import 'package:rick_and_morty/util/string_utils.dart';
 
 import '../model/results.dart';
 import '../mvvm/command.dart';
@@ -30,9 +32,9 @@ final class CharacterDetailsViewModel extends ChangeNotifier {
 
   Uri? get userPic => _userPic;
 
-  String? _status;
+  CharacterStatus? _status;
 
-  String? get status => _status;
+  CharacterStatus? get status => _status;
 
   String? _species;
 
@@ -75,7 +77,7 @@ final class CharacterDetailsViewModel extends ChangeNotifier {
         final character = success.value;
         _name = character.name;
         _userPic = Uri.tryParse(character.image);
-        _status = character.status.toString();
+        _status = character.status;
         _species = character.species;
         _origin = character.origin.name;
         _location = character.location.name;

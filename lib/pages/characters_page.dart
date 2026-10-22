@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty/l10n/app_localizations.dart';
 import 'package:rick_and_morty/pages/character_details_page.dart';
 import 'package:rick_and_morty/services/rickandmorty_service.dart';
+import 'package:rick_and_morty/util/string_utils.dart';
 import 'package:rick_and_morty/view_models/character_details_viewmodel.dart';
 
 import '../services/di.dart';
@@ -45,8 +47,9 @@ class _CharactersPageState extends State<CharactersPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Characters')),
+      appBar: AppBar(title: Text(appLocalizations.characters)),
       body: Column(
         children: [
           Padding(
@@ -55,14 +58,14 @@ class _CharactersPageState extends State<CharactersPage> {
               valueListenable: _searchController,
               builder: (context, value, _) => SearchBar(
                 controller: _searchController,
-                hintText: 'Search by name',
+                hintText: appLocalizations.searchByName,
                 leading: const Icon(Icons.search),
                 textInputAction: TextInputAction.search,
                 onChanged: _vm.onQueryChanged,
                 trailing: [
                   if (value.text.isNotEmpty)
                     IconButton(
-                      tooltip: 'Clear search',
+                      tooltip: appLocalizations.clearSearch,
                       icon: const Icon(Icons.close),
                       onPressed: () {
                         _searchController.clear();
@@ -88,6 +91,7 @@ class _CharactersPageState extends State<CharactersPage> {
     final items = _vm.characters;
     final error = _vm.error;
     final notFoundMessage = _vm.notFoundMessage;
+    final appLocalizations = AppLocalizations.of(context)!;
 
     if (items.isEmpty) {
       if (_vm.loading) return const Center(child: CircularProgressIndicator());
@@ -100,9 +104,9 @@ class _CharactersPageState extends State<CharactersPage> {
       if (error != null) {
         return _Message(
           icon: Icons.cloud_off,
-          title: 'Couldn’t load characters',
+          title: appLocalizations.couldNotLoadCharacters,
           detail: error,
-          actionLabel: 'Try again',
+          actionLabel: appLocalizations.tryAgain,
           onAction: () => _vm.loadCommand.execute(),
         );
       }
@@ -110,8 +114,8 @@ class _CharactersPageState extends State<CharactersPage> {
       final searching = query != null && query.isNotEmpty;
       return _Message(
         icon: Icons.search_off,
-        title: searching ? 'No results for “$query”' : 'No characters yet',
-        detail: searching ? 'Try a different name.' : null,
+        title: searching ? appLocalizations.noResultsFor(query) : appLocalizations.noCharactersYet,
+        detail: searching ? appLocalizations.tryDifferentName : null,
       );
     }
 
@@ -120,10 +124,12 @@ class _CharactersPageState extends State<CharactersPage> {
       controller: _scroll,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 0,
-        mainAxisExtent: 240,
+        crossAxisCount: 2,       // Two cards in a row
+        crossAxisSpacing: 16,    // Space between columns
+        mainAxisSpacing: 16,     // Space between rows
+        // Note: Standard GridView requires a childAspectRatio.
+        // If your text is short, 0.7 to 0.75 usually fits a square + 2 lines of text.
+        childAspectRatio: 0.72,
       ),
       itemCount: items.length + (hasFooter ? 1 : 0),
       itemBuilder: (context, i) {
@@ -150,7 +156,7 @@ class _CharactersPageState extends State<CharactersPage> {
               ? const CircularProgressIndicator()
               : TextButton.icon(
                   icon: const Icon(Icons.refresh),
-                  label: Text('Couldn’t load more: $error'),
+                  label: Text(appLocalizations.couldNotLoadMore(error ?? "")),
                   onPressed: _vm.retry,
                 ),
         );
@@ -168,49 +174,57 @@ class _CharacterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     return Card(
       elevation: 2,
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
+      child: InkWell( // Wrap in InkWell here if you want the whole card clickable
         onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // 1. Fixed Square Image
             AspectRatio(
-              aspectRatio: 1,
+              aspectRatio: 1.0,
               child: Image(
                 image: ResizeImage.resizeIfNeeded(300, 300, HttpImage(Uri.parse(item.userPic), client: client)),
                 fit: BoxFit.contain,
                 frameBuilder: (context, child, frame, sync) => frame == null && !sync
                     ? const Center(
-                        child: SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
+                  child: SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
                     : child,
                 errorBuilder: (context, error, stack) => const Center(
                   child: Icon(Icons.broken_image_outlined),
                 ),
               ),
             ),
+
+            // 2. Text Container (Expanded removed, replaced with a safe scrolling context)
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, // Wrap tightly around content lines
                 children: [
                   Text(
                     item.name,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall,
                   ),
+                  const SizedBox(height: 2), // Slightly tightened spacing
                   Text(
-                    item.status,
-                    maxLines: 1,
+                    item.status.localize(localization) ?? "",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    maxLines: 1, // Restrict to 1 line to ensure it fits perfectly within 0.72 aspect ratio
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -262,7 +276,7 @@ class _Message extends StatelessWidget {
               const SizedBox(height: 16),
               FilledButton.tonal(
                 onPressed: onAction,
-                child: Text(actionLabel ?? 'Try again'),
+                child: Text(actionLabel ?? AppLocalizations.of(context)!.tryAgain),
               ),
             ],
           ],

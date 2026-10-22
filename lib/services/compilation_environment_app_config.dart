@@ -10,7 +10,4 @@ class CompilationEnvironmentAppConfig implements IAppConfig {
 
   @override
   String get environment => _environment;
-
-  @override
-  String get bundleIdentifier => "app.clatch.rickandmorty";
 }

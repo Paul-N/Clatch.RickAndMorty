@@ -69,8 +69,16 @@ http.Client _createPlatformClient() {
     // validators). Build ONE engine and share it.
     // In older cronet_http versions build() returns a Future: use
     // CronetClient.fromCronetEngineFuture instead.
+    final cacheDirectory = Directory(
+      '${Directory.systemTemp.path}/cronet_http_cache',
+    )..createSync(recursive: true);
+
     return CronetClient.fromCronetEngine(
-      CronetEngine.build(cacheMode: CacheMode.disk, cacheMaxSize: 128 << 20),
+      CronetEngine.build(
+        cacheMode: CacheMode.disk,
+        cacheMaxSize: 128 << 20,
+        storagePath: cacheDirectory.path,
+      ),
     );
   }
 
