@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../ui/http_image.dart';
 import '../view_models/characters/character_item_viewmodel.dart';
 import '../view_models/characters_viewmodel.dart';
+import 'package:http/http.dart' as http;
 
 /// Searchable, infinitely scrolling list of characters (Material 3).
 ///
 /// All state and logic live in [CharactersViewModel]; this widget only renders
 /// it and forwards user input. The caller owns (and disposes) the view model.
 class CharactersPage extends StatefulWidget {
-  const CharactersPage({super.key, required this.viewModel, this.onSelected});
+  const CharactersPage({super.key, required this.viewModel, required this._httpClient, this.onSelected});
 
+  final http.Client _httpClient;
   final CharactersViewModel viewModel;
   final ValueChanged<CharacterItemViewModel>? onSelected;
 
@@ -124,6 +127,7 @@ class _CharactersPageState extends State<CharactersPage> {
           final onSelected = widget.onSelected;
           return _CharacterTile(
             item,
+            client: widget._httpClient,
             onTap: onSelected == null ? null : () => onSelected(item),
           );
         }
@@ -134,7 +138,7 @@ class _CharactersPageState extends State<CharactersPage> {
                 ? const CircularProgressIndicator()
                 : TextButton.icon(
               icon: const Icon(Icons.refresh),
-              label: const Text('Couldn’t load more. Retry'),
+              label: Text('Couldn’t load more: $error'),
               onPressed: _vm.retry,
             ),
           ),
@@ -145,9 +149,10 @@ class _CharactersPageState extends State<CharactersPage> {
 }
 
 class _CharacterTile extends StatelessWidget {
-  const _CharacterTile(this.item, {this.onTap});
+  const _CharacterTile(this.item, {required this.client, this.onTap});
 
   final CharacterItemViewModel item;
+  final http.Client client;
   final VoidCallback? onTap;
 
   @override
@@ -156,9 +161,12 @@ class _CharacterTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       clipBehavior: Clip.antiAlias,
       child: ListTile(
-        // ASSUMPTION: CharacterItemViewModel exposes name, image and subtitle.
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(item.userPic.toString()),
+        leading: Image(
+          image: ResizeImage.resizeIfNeeded(96, 96, HttpImage(Uri.parse(item.userPic), client: client)),
+          frameBuilder: (context, child, frame, sync) => frame == null && !sync
+              ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              : child,
+          errorBuilder: (context, error, stack) => const Icon(Icons.broken_image_outlined),
         ),
         title: Text(item.name),
         subtitle: Text(item.status),

@@ -13,6 +13,8 @@ import 'package:rick_and_morty/services/di.dart';
 import 'package:rick_and_morty/rick_and_morty_app.dart';
 import 'package:rick_and_morty/services/rickandmorty_service.dart';
 
+import 'infrastructure/throttled_http_client.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
@@ -28,9 +30,8 @@ void main() {
 
     DI.register(Clock());
     DI.register<Logger>(Logger.root);
-    final httpClient = _createPlatformClient();
+    final httpClient = ThrottledHttpClient(_createPlatformClient(), minInterval: const Duration(milliseconds: 335));
     DI.register<http.Client>(httpClient);
-    DI.register<http.Client>(http.Client());
     DI.register<IRickAndMortyRestApi>(RickAndMortyRestApi(
       client: DI.resolveOrCrash<http.Client>(),
       baseUrl: appConfig.backendHomeUrl,

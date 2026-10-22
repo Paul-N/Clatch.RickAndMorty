@@ -4,53 +4,6 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:problem_details/problem_details.dart';
 
-/// An HTTP 429 response, with the Cloudflare problem details (error 1015 for
-/// rate limits) when the body has them. Building it never throws.
-final class CloudflareTooManyRequestsError {
-  const CloudflareTooManyRequestsError({
-    required this.statusCode,
-    required this.headers,
-    required this.cloudflareProblemDetails,
-  });
-
-  factory CloudflareTooManyRequestsError.fromResponse(Response r) =>
-      CloudflareTooManyRequestsError(
-        statusCode: r.statusCode,
-        headers: TooManyRequestsErrorHeaders.fromHeaders(r.headers),
-        cloudflareProblemDetails: _tryProblem(r.body),
-      );
-
-  final int statusCode;
-  final TooManyRequestsErrorHeaders headers;
-
-  /// Null when the body is not a JSON object that parses as problem details.
-  final ProblemDetails? cloudflareProblemDetails;
-
-  /// Cloudflare error 1015 ("You are being rate limited").
-  bool get isRateLimited {
-    final problem = cloudflareProblemDetails;
-    return problem != null && problem.cloudflareError && problem.errorCode == 1015;
-  }
-
-  /// How long to wait. The header comes first, because Cloudflare documents
-  /// that a rate-limiting rule's dynamic value takes precedence over the
-  /// default (30 s for 1015) that the body carries. Then the body, then
-  /// [fallback].
-  Duration retryAfter({Duration fallback = const Duration(seconds: 30)}) =>
-      headers.retryAfter ?? cloudflareProblemDetails?.retryAfter ?? fallback;
-}
-
-ProblemDetails? _tryProblem(String body) {
-  try {
-    final json = jsonDecode(body);
-    return json is Map<String, dynamic> ? ProblemDetails.fromJson(json) : null;
-  } on FormatException {
-    return null;
-  } on TypeError {
-    return null;
-  }
-}
-
 final class TooManyRequestsErrorHeaders {
   const TooManyRequestsErrorHeaders({
     this.retryAfter,

@@ -74,7 +74,7 @@ final class RickAndMortyRestApi implements IRickAndMortyRestApi {
 
   Future<ApiResult<T>> _get<T>(Uri uri, T Function(dynamic json) parse) async {
     try {
-      final response = await _client.get(uri).timeout(const Duration(seconds: 15));
+      final response = await _client.get(uri, headers: {'Accept': 'application/json'}).timeout(const Duration(seconds: 15));
       final body = utf8.decode(response.bodyBytes);
       if (response.statusCode == 200) return parse(jsonDecode(body)).u31;
       if (response.statusCode == 429) return CloudflareTooManyRequestsError.fromResponse(response).u33;

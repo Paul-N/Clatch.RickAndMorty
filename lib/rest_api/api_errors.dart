@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:problem_details/problem_details.dart';
 import 'package:rick_and_morty/rest_api/too_many_requests.dart';
 
+typedef ProblemDetailsOrString = Union2<ProblemDetails, String>;
+
 sealed class ApiError {
 
 }
@@ -76,28 +78,28 @@ final class CloudflareTooManyRequestsError implements ApiError {
   const CloudflareTooManyRequestsError({
     required this.statusCode,
     required this.headers,
-    required this.cloudflareProblemDetails,
+    required this.details,
   });
 
   factory CloudflareTooManyRequestsError.fromResponse(http.Response r) =>
       CloudflareTooManyRequestsError(
         statusCode: r.statusCode,
         headers: TooManyRequestsErrorHeaders.fromHeaders(r.headers),
-        cloudflareProblemDetails: _tryProblem(r.body),
+        details: _tryProblem(r),
       );
 
   final int statusCode;
   final TooManyRequestsErrorHeaders headers;
 
   /// Null when the body is not a JSON object that parses as problem details.
-  final ProblemDetails? cloudflareProblemDetails;
+  final ProblemDetailsOrString? details;
 
   /// Cloudflare error 1015 ("You are being rate limited").
-  bool get isRateLimited {
-    final problem = cloudflareProblemDetails;
-    return problem != null &&
-        problem.cloudflareError &&
-        problem.errorCode == 1015;
+  bool get isRateLimited1015 {
+    final problem = details;
+    return problem != null && problem.is1 &&
+        problem.as1.cloudflareError &&
+        problem.as1.errorCode == 1015;
   }
 
   /// How long to wait. The header comes first, because Cloudflare documents
@@ -105,16 +107,25 @@ final class CloudflareTooManyRequestsError implements ApiError {
   /// default (30 s for 1015) that the body carries. Then the body, then
   /// [fallback].
   Duration retryAfter({Duration fallback = const Duration(seconds: 30)}) =>
-      headers.retryAfter ?? cloudflareProblemDetails?.retryAfter ?? fallback;
+      headers.retryAfter ?? details?.as1OrNull?.retryAfter ?? fallback;
 }
 
-ProblemDetails? _tryProblem(String body) {
-  try {
-    final json = jsonDecode(body);
-    return json is Map<String, dynamic> ? ProblemDetails.fromJson(json) : null;
-  } on FormatException {
-    return null;
-  } on TypeError {
-    return null;
+ProblemDetailsOrString? _tryProblem(http.Response response) {
+  var contentType = response.headers['content-type'];
+  if(contentType?.contains('application/json') == true) {
+    try {
+      final json = jsonDecode(response.body);
+      return json is Map<String, dynamic>
+          ? ProblemDetails.fromJson(json).u21
+          : null;
+    } on FormatException {
+      return null;
+    } on TypeError {
+      return null;
+    }
+  } else if(contentType?.contains('text/plain') == true) {
+    final body = utf8.decode(response.bodyBytes);
+    return body.u22;
   }
+  return null; //they are actually a text/html; charset=UTF-8 for image queries
 }

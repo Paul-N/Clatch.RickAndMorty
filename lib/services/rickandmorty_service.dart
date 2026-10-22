@@ -88,8 +88,8 @@ final class RickAndMortyService implements IRickAndMortyService {
   String _describe(ApiError error) => switch (error) {
     ApiExceptionError() when error.exception is TimeoutException => 'The request timed out.',
     ApiExceptionError() => error.exception.toString(),
-    ApiResponseError apiExc => _describeApiException(apiExc),
-    _ => error.toString(),
+    CloudflareTooManyRequestsError() => _describeTooManyRequests(error),
+    ApiResponseError apiExc => _describeApiException(apiExc)
   };
 
   String _describeApiException(ApiResponseError error) {
@@ -99,6 +99,9 @@ final class RickAndMortyService implements IRickAndMortyService {
       return error.toString();
     }
   }
+
+  String _describeTooManyRequests(CloudflareTooManyRequestsError tooManyRequests)
+    => tooManyRequests.details?.split((pd) => pd.detail, (str) => str) ?? "Too many requests.";
 }
 
 extension on ApiResponseError {

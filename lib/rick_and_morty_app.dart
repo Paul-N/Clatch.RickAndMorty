@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:rick_and_morty/pages/characters_page.dart';
 import 'package:rick_and_morty/services/di.dart';
 import 'package:rick_and_morty/services/rickandmorty_service.dart';
@@ -15,7 +16,7 @@ class RickAndMortyApp extends StatelessWidget {
       title: 'Rick and Morty',
       theme: ThemeData(colorSchemeSeed: Colors.teal),
       darkTheme: ThemeData(colorSchemeSeed: Colors.teal, brightness: Brightness.dark),
-      home: CharactersPage(viewModel: CharactersViewModel(service: rmService), onSelected: (c) { /* open details */ }),
+      home: CharactersPage(viewModel: CharactersViewModel(service: rmService), httpClient: DI.resolveOrCrash<http.Client>(), onSelected: (c) { /* open details */ }),
       navigatorKey: navigatorKey,
     );
   }

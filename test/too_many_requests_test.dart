@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:rick_and_morty/dto/too_many_requests.dart';
+import 'package:rick_and_morty/rest_api/api_errors.dart';
 
 
 // Captured from GET https://rickandmortyapi.com/api/character/2 on 2026-10-21.
@@ -72,7 +73,7 @@ void main() {
     final error = CloudflareTooManyRequestsError.fromResponse(response);
 
     expect(error.statusCode, 429);
-    expect(error.isRateLimited, isTrue);
+    expect(error.isRateLimited1015, isTrue);
 
     // Headers
     final h = error.headers;
@@ -92,8 +93,9 @@ void main() {
     expect(h.reportTo?.endpoints.single.url?.host, 'a.nel.cloudflare.com');
 
     // RFC 9457 standard members
-    final problem = error.cloudflareProblemDetails!;
-    expect(problem.status, 429);
+    final problem = error.details?.as1OrNull;
+    expect(problem, isNotNull);
+    expect(problem!.status, 429);
     expect(problem.title, 'Error 1015: You are being rate limited');
     expect(problem.detail, contains('rate-limited'));
     expect('${problem.type}', startsWith('https://developers.cloudflare.com/'));
@@ -118,7 +120,7 @@ void main() {
     final error = CloudflareTooManyRequestsError.fromResponse(await client.get(uri));
 
     expect(error.headers.retryAfter, const Duration(seconds: 2));
-    expect(error.cloudflareProblemDetails!.retryAfter, const Duration(seconds: 30));
+    expect(error.details?.as1OrNull?.retryAfter, const Duration(seconds: 30));
     expect(error.retryAfter(), const Duration(seconds: 2));
   });
 
@@ -151,15 +153,15 @@ void main() {
       http.Response('{"error":"slow down"}', 429, headers: {'retry-after': '10'}),
     );
     expect(plain.statusCode, 429);
-    expect(plain.isRateLimited, isFalse);
-    expect(plain.cloudflareProblemDetails?.cloudflareError ?? false, isFalse);
+    expect(plain.isRateLimited1015, isFalse);
+    expect(plain.details?.as1OrNull?.cloudflareError ?? false, isFalse);
     expect(plain.retryAfter(), const Duration(seconds: 10));
 
     final text = CloudflareTooManyRequestsError.fromResponse(
       http.Response('error code: 1015', 429),
     );
-    expect(text.cloudflareProblemDetails, isNull);
-    expect(text.isRateLimited, isFalse);
+    expect(text.details?.as2OrNull, isNotNull);
+    expect(text.isRateLimited1015, isFalse);
     expect(text.retryAfter(), const Duration(seconds: 30));
   });
 
@@ -171,8 +173,8 @@ void main() {
       429,
     ));
 
-    expect(error.cloudflareProblemDetails!.errorCategory, CloudflareErrorCategory.unknown);
-    expect(error.isRateLimited, isTrue);
+    expect(error.details?.as1OrNull?.errorCategory, CloudflareErrorCategory.unknown);
+    expect(error.isRateLimited1015, isTrue);
   });
 
   test('malformed NEL, Report-To and Date headers read as null', () {
