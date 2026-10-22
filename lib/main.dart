@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:clock/clock.dart';
+import 'package:cronet_http/cronet_http.dart';
+import 'package:cupertino_http/cupertino_http.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:logging/logging.dart';
-import 'package:rick_and_morty/rest_api/rickandmorty_rest_api.dart';
+import 'package:rick_and_morty/infrastructure/rickandmorty_rest_api.dart';
 import 'package:rick_and_morty/services/app_config.dart';
 import 'package:rick_and_morty/services/compilation_environment_app_config.dart';
 import 'package:rick_and_morty/services/di.dart';
@@ -25,6 +28,8 @@ void main() {
 
     DI.register(Clock());
     DI.register<Logger>(Logger.root);
+    final httpClient = _createPlatformClient();
+    DI.register<http.Client>(httpClient);
     DI.register<http.Client>(http.Client());
     DI.register<IRickAndMortyRestApi>(RickAndMortyRestApi(
       client: DI.resolveOrCrash<http.Client>(),
@@ -33,6 +38,7 @@ void main() {
     DI.register<IRickAndMortyService>(RickAndMortyService(
       client: DI.resolveOrCrash<IRickAndMortyRestApi>()
     ));
+
     DI.register<IAppConfig>(appConfig);
     runApp(RickAndMortyApp());
     // if (Platform.isMacOS || Platform.isAndroid) {
@@ -43,79 +49,28 @@ void main() {
   }
 }
 
-// Future<void> _startUpAsyncTask() async {
-//   WidgetsBinding.instance.addPostFrameCallback((_) async {
-//     final service = DI.resolve<IMonitoringService>();
-//     try {
-//       await service?.checkIfDatabaseIsAvailable(true);
-//     } catch (e) {
-//       debugPrint("Startup task error: $e");
-//     }
-//   });
-// }
+http.Client _createPlatformClient() {
+  if (Platform.isIOS || Platform.isMacOS) {
+    // defaultSessionConfiguration() uses caching; the ephemeral one does not
+    // keep a persistent cache. The cache is sized explicitly because the
+    // shared default is small.
+    final config = URLSessionConfiguration.defaultSessionConfiguration()
+      ..cache = URLCache.withCapacity(
+        memoryCapacity: 8 << 20, // 8 MB
+        diskCapacity: 128 << 20, // 128 MB
+      );
+    return CupertinoClient.fromSessionConfiguration(config);
+  }
 
-//-------------
-
-/*void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+  if (Platform.isAndroid) {
+    // CacheMode.disk is the persistent HTTP cache (honors max-age, Age and
+    // validators). Build ONE engine and share it.
+    // In older cronet_http versions build() returns a Future: use
+    // CronetClient.fromCronetEngineFuture instead.
+    return CronetClient.fromCronetEngine(
+      CronetEngine.build(cacheMode: CacheMode.disk, cacheMaxSize: 128 << 20),
     );
   }
+
+  return IOClient();
 }
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}*/
