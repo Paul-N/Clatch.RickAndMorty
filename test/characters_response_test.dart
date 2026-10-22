@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
-import 'package:rick_and_morty/rest_api/api_exception.dart';
-import 'package:rick_and_morty/rest_api/rickandmorty_rest_api.dart';
+import 'package:rick_and_morty/rest_api/api_errors.dart';
+import 'package:rick_and_morty/infrastructure/rickandmorty_rest_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -49,7 +49,7 @@ void main() {
       final result = await api.getCharactersByUri(Uri.parse('https://rickandmortyapi.com/api/character?page=2&name=$testName'));
 
       expect(result.is3, isTrue);
-      final exc = result.as3 as ApiException;
+      final exc = result.as3 as ApiResponseError;
       expect(exc, isNotNull);
       expect(exc.statusCode, 404);
       expect(exc.body, isNotNull);

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:rick_and_morty/dto/character.dart';
 import 'package:rick_and_morty/dto/paged_response.dart';
 import 'package:rick_and_morty/model/results.dart';
+
 import '../mvvm/command.dart';
 import '../services/rickandmorty_service.dart';
 import 'characters/character_item_viewmodel.dart';
@@ -41,7 +42,9 @@ final class CharactersViewModel extends ChangeNotifier {
     await _fetch(firstPage: true);
   }
 
-  Future<void> _fetch({required bool firstPage}) async {
+  Future<void> refresh() => _fetch(firstPage: true, refresh: true);
+
+  Future<void> _fetch({required bool firstPage, bool refresh = false}) async {
     if (!firstPage && (_loading || _next == null || _error != null)) return;
 
     _loading = true;
@@ -52,10 +55,16 @@ final class CharactersViewModel extends ChangeNotifier {
     }
     notifyListeners();
 
-    final outcome = await (firstPage
-        ? _service.getCharacters(filter: _query?.isEmpty != false ? null : CharacterFilter(name: _query))
-        : _service.getCharactersByUri(_next!))
-        .value;
+    final outcome =
+        await (firstPage
+                ? _service.getCharacters(
+                    filter: _query?.isEmpty != false
+                        ? null
+                        : CharacterFilter(name: _query),
+                    refresh: refresh,
+                  )
+                : _service.getCharactersByUri(_next!))
+            .value;
 
     // Superseded by a newer call (or canceled on dispose): that call owns the
     // state now, so leave `_loading` and the lists alone.
@@ -63,12 +72,18 @@ final class CharactersViewModel extends ChangeNotifier {
 
     _loading = false;
     outcome.split(
-          (success) {
-            _characters.addAll(success.value.results.map((c) => CharacterItemViewModel.fromChatItem(c)));
-            _next = _nextOf(success.value);
-      }, (notFound){
-          _notFoundMessage = notFound.description;
-      }, (fail) {
+      (success) {
+        _characters.addAll(
+          success.value.results.map(
+            (c) => CharacterItemViewModel.fromChatItem(c),
+          ),
+        );
+        _next = _nextOf(success.value);
+      },
+      (notFound) {
+        _notFoundMessage = notFound.description;
+      },
+      (fail) {
         _error = fail.description ?? 'Something went wrong.';
       },
     );
@@ -100,7 +115,8 @@ final class CharactersViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _debounce?.cancel();
-    _service.cancelPending(); // a late result must not touch a disposed notifier
+    _service
+        .cancelPending(); // a late result must not touch a disposed notifier
     super.dispose();
   }
 }

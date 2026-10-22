@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:rick_and_morty/dto/too_many_requests.dart';
-
+import 'package:rick_and_morty/rest_api/api_errors.dart';
+import 'package:rick_and_morty/rest_api/too_many_requests.dart';
 
 // Captured from GET https://rickandmortyapi.com/api/character/2 on 2026-10-21.
 
@@ -55,12 +55,8 @@ const _rawBody = r'''
 ''';
 
 final client = MockClient((http.Request request) async {
-  if(request.url == uri) {
-    return http.Response(
-      _rawBody,
-      429,
-      headers: _headers,
-    );
+  if (request.url == uri) {
+    return http.Response(_rawBody, 429, headers: _headers);
   } else {
     throw Exception('Unexpected request: ${request.url}');
   }
@@ -115,10 +111,15 @@ void main() {
   });
 
   test('the Retry-After header wins over the body', () async {
-    final error = CloudflareTooManyRequestsError.fromResponse(await client.get(uri));
+    final error = CloudflareTooManyRequestsError.fromResponse(
+      await client.get(uri),
+    );
 
     expect(error.headers.retryAfter, const Duration(seconds: 2));
-    expect(error.cloudflareProblemDetails!.retryAfter, const Duration(seconds: 30));
+    expect(
+      error.cloudflareProblemDetails!.retryAfter,
+      const Duration(seconds: 30),
+    );
     expect(error.retryAfter(), const Duration(seconds: 2));
   });
 
@@ -131,24 +132,31 @@ void main() {
     expect(bodyOnly.retryAfter(), const Duration(seconds: 30));
 
     // Neither: the fallback (30 s unless given).
-    final nothing = CloudflareTooManyRequestsError.fromResponse(http.Response('', 429));
-    expect(nothing.retryAfter(fallback: const Duration(seconds: 5)),
-        const Duration(seconds: 5));
+    final nothing = CloudflareTooManyRequestsError.fromResponse(
+      http.Response('', 429),
+    );
+    expect(
+      nothing.retryAfter(fallback: const Duration(seconds: 5)),
+      const Duration(seconds: 5),
+    );
     expect(nothing.retryAfter(), const Duration(seconds: 30));
   });
 
-  test('Retry-After in the HTTP-date form is ignored', () {
-    // Only the delta-seconds form is understood. (fromHeaders expects
-    // lower-case keys, which is what Response.headers provides.)
-    final headers = TooManyRequestsErrorHeaders.fromHeaders(
-      {'retry-after': 'Wed, 21 Oct 2026 00:06:35 GMT'},
-    );
-    expect(headers.retryAfter, isNull);
+  test('Retry-After in the HTTP-date form is resolved against Date', () {
+    final headers = TooManyRequestsErrorHeaders.fromHeaders({
+      'date': 'Wed, 21 Oct 2026 00:06:35 GMT',
+      'retry-after': 'Wed, 21 Oct 2026 00:06:37 GMT',
+    });
+    expect(headers.retryAfter, const Duration(seconds: 2));
   });
 
   test('a 429 that is not from Cloudflare leaves cloudflare empty', () {
     final plain = CloudflareTooManyRequestsError.fromResponse(
-      http.Response('{"error":"slow down"}', 429, headers: {'retry-after': '10'}),
+      http.Response(
+        '{"error":"slow down"}',
+        429,
+        headers: {'retry-after': '10'},
+      ),
     );
     expect(plain.statusCode, 429);
     expect(plain.isRateLimited, isFalse);
@@ -164,14 +172,19 @@ void main() {
   });
 
   test('unknown categories do not break parsing', () {
-    final error = CloudflareTooManyRequestsError.fromResponse(http.Response(
-      '{"type":"about:blank","title":"x","status":429,"detail":"x","instance":"x",'
-          '"cloudflare_error":true,"error_code":1015,"error_name":"rate_limited",'
-          '"error_category":"brand_new"}',
-      429,
-    ));
+    final error = CloudflareTooManyRequestsError.fromResponse(
+      http.Response(
+        '{"type":"about:blank","title":"x","status":429,"detail":"x","instance":"x",'
+        '"cloudflare_error":true,"error_code":1015,"error_name":"rate_limited",'
+        '"error_category":"brand_new"}',
+        429,
+      ),
+    );
 
-    expect(error.cloudflareProblemDetails!.errorCategory, CloudflareErrorCategory.unknown);
+    expect(
+      error.cloudflareProblemDetails!.errorCategory,
+      CloudflareErrorCategory.unknown,
+    );
     expect(error.isRateLimited, isTrue);
   });
 
@@ -190,7 +203,7 @@ void main() {
   test('Report-To with several groups keeps the first', () {
     final reportTo = NelReportTo.tryParse(
       '{"group":"a","max_age":1,"endpoints":[]},'
-          '{"group":"b","max_age":2,"endpoints":[]}',
+      '{"group":"b","max_age":2,"endpoints":[]}',
     );
 
     expect(reportTo?.group, 'a');
