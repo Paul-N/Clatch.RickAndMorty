@@ -117,9 +117,15 @@ class _CharactersPageState extends State<CharactersPage> {
     }
 
     final hasFooter = _vm.loading || error != null;
-    return ListView.builder(
+    return GridView.builder(
       controller: _scroll,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 0,
+        mainAxisExtent: 240,
+      ),
       itemCount: items.length + (hasFooter ? 1 : 0),
       itemBuilder: (context, i) {
         if (i < items.length) {
@@ -131,17 +137,14 @@ class _CharactersPageState extends State<CharactersPage> {
             onTap: onSelected == null ? null : () => onSelected(item),
           );
         }
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Center(
-            child: _vm.loading
-                ? const CircularProgressIndicator()
-                : TextButton.icon(
-              icon: const Icon(Icons.refresh),
-              label: Text('Couldn’t load more: $error'),
-              onPressed: _vm.retry,
-            ),
-          ),
+        return Center(
+          child: _vm.loading
+              ? const CircularProgressIndicator()
+              : TextButton.icon(
+                  icon: const Icon(Icons.refresh),
+                  label: Text('Couldn’t load more: $error'),
+                  onPressed: _vm.retry,
+                ),
         );
       },
     );
@@ -157,21 +160,55 @@ class _CharacterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card.filled(
+    return Card(
+      elevation: 2,
       margin: const EdgeInsets.only(bottom: 8),
       clipBehavior: Clip.antiAlias,
-      child: ListTile(
-        leading: Image(
-          image: ResizeImage.resizeIfNeeded(96, 96, HttpImage(Uri.parse(item.userPic), client: client)),
-          frameBuilder: (context, child, frame, sync) => frame == null && !sync
-              ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
-              : child,
-          errorBuilder: (context, error, stack) => const Icon(Icons.broken_image_outlined),
-        ),
-        title: Text(item.name),
-        subtitle: Text(item.status),
-        trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+      child: InkWell(
         onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AspectRatio(
+              aspectRatio: 1,
+              child: Image(
+                image: ResizeImage.resizeIfNeeded(300, 300, HttpImage(Uri.parse(item.userPic), client: client)),
+                fit: BoxFit.contain,
+                frameBuilder: (context, child, frame, sync) => frame == null && !sync
+                    ? const Center(
+                        child: SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : child,
+                errorBuilder: (context, error, stack) => const Center(
+                  child: Icon(Icons.broken_image_outlined),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Text(
+                    item.status,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

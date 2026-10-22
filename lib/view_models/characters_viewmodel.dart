@@ -64,7 +64,7 @@ final class CharactersViewModel extends ChangeNotifier {
     _loading = false;
     outcome.split(
           (success) {
-            _characters.addAll(success.value.results.map((c) => CharacterItemViewModel.fromChatItem(c)));
+            _characters.addAll(success.value.results.map((c) => CharacterItemViewModel.fromCharacter(c)));
             _next = _nextOf(success.value);
       }, (notFound){
           _notFoundMessage = notFound.description;

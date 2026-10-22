@@ -12,7 +12,7 @@ final class CharacterItemViewModel {
     required this.userPic,
   });
 
-  factory CharacterItemViewModel.fromChatItem(Character chatItem) {
+  factory CharacterItemViewModel.fromCharacter(Character chatItem) {
     return CharacterItemViewModel(
       name: chatItem.name,
       status: chatItem.status.toString(), //TODO: localize
