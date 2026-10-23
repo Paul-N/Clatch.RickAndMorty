@@ -39,19 +39,9 @@
 
 ## Running
 
-Use the **main (Dev)** run configuration in your IDE. It configures:
-- Development backend URL
-- Debug logging enabled
-- Hot reload support
-
-## Build
+Use the **main (Dev)** run configuration in Android Studio. Or use bash script without IDE. Windows version of the script was not tested.
 
 ```bash
-# Generate Freezed/JSON code
-dart run build_runner build --delete-conflicting-outputs
-
-# Run tests
-flutter test
-
-# Analyze
-dart analyze
+./run_dev.sh ios <ios-device-id>
+./run_dev.sh android emulator-5554
+```
