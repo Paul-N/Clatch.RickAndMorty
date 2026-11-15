@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:extension_type_unions/extension_type_unions.dart';
 import 'package:http/http.dart' as http;
 import 'package:problem_details/problem_details.dart';
-import 'package:rick_and_morty/rest_api/too_many_requests.dart';
+import 'package:rick_and_morty_api/errors/too_many_requests.dart';
 
 typedef ProblemDetailsOrString = Union2<ProblemDetails, String>;
 
@@ -81,10 +81,10 @@ final class CloudflareTooManyRequestsError implements ApiError {
     required this.details,
   });
 
-  factory CloudflareTooManyRequestsError.fromResponse(http.Response r, DateTime now) =>
+  factory CloudflareTooManyRequestsError.fromResponse(http.Response r/*, DateTime now*/) =>
       CloudflareTooManyRequestsError(
         statusCode: r.statusCode,
-        headers: TooManyRequestsErrorHeaders.fromHeaders(r.headers, now),
+        headers: TooManyRequestsErrorHeaders.fromHeaders(r.headers/*, now*/),
         details: _tryProblem(r),
       );
 

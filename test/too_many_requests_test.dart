@@ -2,8 +2,8 @@ import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:rick_and_morty/dto/too_many_requests.dart';
-import 'package:rick_and_morty/rest_api/api_errors.dart';
+import 'package:rick_and_morty_api/errors/api_errors.dart';
+import 'package:rick_and_morty_api/errors/too_many_requests.dart';
 
 final _clock = Clock();
 
@@ -72,7 +72,7 @@ final client = MockClient((http.Request request) async {
 void main() {
   test('test DTOs', () async {
     final response = await client.get(uri);
-    final error = CloudflareTooManyRequestsError.fromResponse(response, _clock.now());
+    final error = CloudflareTooManyRequestsError.fromResponse(response);
 
     expect(error.statusCode, 429);
     expect(error.isRateLimited1015, isTrue);
@@ -119,7 +119,7 @@ void main() {
   });
 
   test('the Retry-After header wins over the body', () async {
-    final error = CloudflareTooManyRequestsError.fromResponse(await client.get(uri), _clock.now());
+    final error = CloudflareTooManyRequestsError.fromResponse(await client.get(uri));
 
     expect(error.headers.retryAfter, const Duration(seconds: 2));
     expect(error.details?.as1OrNull?.retryAfter, const Duration(seconds: 30));
@@ -130,13 +130,12 @@ void main() {
     // No Retry-After header: the body's retry_after is used.
     final bodyOnly = CloudflareTooManyRequestsError.fromResponse(
       http.Response(_rawBody, 429),
-      _clock.now()
     );
     expect(bodyOnly.headers.retryAfter, isNull);
     expect(bodyOnly.retryAfter(), const Duration(seconds: 30));
 
     // Neither: the fallback (30 s unless given).
-    final nothing = CloudflareTooManyRequestsError.fromResponse(http.Response('', 429), _clock.now());
+    final nothing = CloudflareTooManyRequestsError.fromResponse(http.Response('', 429));
     expect(nothing.retryAfter(fallback: const Duration(seconds: 5)),
         const Duration(seconds: 5));
     expect(nothing.retryAfter(), const Duration(seconds: 30));
@@ -153,7 +152,7 @@ void main() {
 
   test('a 429 that is not from Cloudflare leaves cloudflare empty', () {
     final plain = CloudflareTooManyRequestsError.fromResponse(
-      http.Response('{"error":"slow down"}', 429, headers: {'retry-after': '10'}), _clock.now()
+      http.Response('{"error":"slow down"}', 429, headers: {'retry-after': '10'})
     );
     expect(plain.statusCode, 429);
     expect(plain.isRateLimited1015, isFalse);
@@ -161,7 +160,7 @@ void main() {
     expect(plain.retryAfter(), const Duration(seconds: 10));
 
     final text = CloudflareTooManyRequestsError.fromResponse(
-      http.Response('error code: 1015', 429), _clock.now()
+      http.Response('error code: 1015', 429)
     );
     expect(text.details?.as2OrNull, isNotNull);
     expect(text.isRateLimited1015, isFalse);
@@ -174,7 +173,7 @@ void main() {
           '"cloudflare_error":true,"error_code":1015,"error_name":"rate_limited",'
           '"error_category":"brand_new"}',
       429,
-    ), _clock.now());
+    ));
 
     expect(error.details?.as1OrNull?.errorCategory, CloudflareErrorCategory.unknown);
     expect(error.isRateLimited1015, isTrue);

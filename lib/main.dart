@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:logging/logging.dart';
-import 'package:rick_and_morty/infrastructure/rickandmorty_rest_api.dart';
 import 'package:rick_and_morty/services/app_config.dart';
 import 'package:rick_and_morty/services/compilation_environment_app_config.dart';
 import 'package:rick_and_morty/services/di.dart';
 import 'package:rick_and_morty/rick_and_morty_app.dart';
 import 'package:rick_and_morty/services/rickandmorty_service.dart';
+import 'package:rick_and_morty_api/service/rickandmorty_rest_api.dart';
+import 'package:rick_and_morty_api/service/rickandmorty_rest_api_impl.dart';
 
 import 'infrastructure/throttled_http_client.dart';
 
@@ -35,7 +36,7 @@ void main() {
     DI.register<IRickAndMortyRestApi>(RickAndMortyRestApi(
       client: DI.resolveOrCrash<http.Client>(),
       baseUrl: appConfig.backendHomeUrl,
-      clock: DI.resolveOrCrash<Clock>(),
+      //clock: DI.resolveOrCrash<Clock>(),
     ));
     DI.register<IRickAndMortyService>(RickAndMortyService(
       client: DI.resolveOrCrash<IRickAndMortyRestApi>()

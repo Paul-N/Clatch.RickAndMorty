@@ -1,5 +1,4 @@
-import '../../dto/character.dart';
-import '../../util/string_utils.dart';
+import 'package:rick_and_morty_api/dto/character.dart';
 
 final class CharacterItemViewModel {
   final String name;

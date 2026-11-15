@@ -1,8 +1,8 @@
 import 'package:clock/clock.dart';
 import 'package:http/http.dart' as http;
-import 'package:rick_and_morty/rest_api/api_errors.dart';
-import 'package:rick_and_morty/infrastructure/rickandmorty_rest_api.dart';
+import 'package:rick_and_morty_api/errors/api_errors.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rick_and_morty_api/service/rickandmorty_rest_api_impl.dart';
 
 final _clock = Clock();
 
@@ -11,8 +11,7 @@ void main() {
     test('returns getCharacters not filtered', () async {
       final api = RickAndMortyRestApi(
         client: http.Client(),
-        baseUrl: 'https://rickandmortyapi.com',
-        clock: _clock,
+        baseUrl: 'https://rickandmortyapi.com'
       );
 
       final result = await api.getCharacters();
@@ -28,8 +27,7 @@ void main() {
     test('returns getCharacters filtered and paged', () async {
       final api = RickAndMortyRestApi(
         client: http.Client(),
-        baseUrl: 'https://rickandmortyapi.com',
-        clock: _clock,
+        baseUrl: 'https://rickandmortyapi.com'
       );
 
       final testName = 'Rick';
@@ -47,8 +45,7 @@ void main() {
     test('returns getCharacters non existed (404 case)', () async {
       final api = RickAndMortyRestApi(
         client: http.Client(),
-        baseUrl: 'https://rickandmortyapi.com',
-        clock: _clock,
+        baseUrl: 'https://rickandmortyapi.com'
       );
 
       final testName = 'NEVER_EXISTED';
@@ -67,8 +64,7 @@ void main() {
     test('returns getCharacter by id', () async {
       final api = RickAndMortyRestApi(
         client: http.Client(),
-        baseUrl: 'https://rickandmortyapi.com',
-        clock: _clock,
+        baseUrl: 'https://rickandmortyapi.com'
       );
 
       final result = await api.getCharacterById(2);

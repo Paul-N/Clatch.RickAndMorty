@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:extension_type_unions/extension_type_unions.dart';
-import 'package:rick_and_morty/dto/character.dart';
-import 'package:rick_and_morty/dto/paged_response.dart';
 import 'package:rick_and_morty/model/results.dart';
-import 'package:rick_and_morty/rest_api/api_errors.dart';
-import '../infrastructure/rickandmorty_rest_api.dart';
+import 'package:rick_and_morty_api/errors/api_errors.dart';
+import 'package:rick_and_morty_api/dto/character.dart';
+import 'package:rick_and_morty_api/dto/paged_response.dart';
+import 'package:rick_and_morty_api/service/rickandmorty_rest_api.dart';
 
 typedef MaybeSuccess = Union3<Success, NotFound, Fail>;
 typedef MaybeData<T> = Union3<Data<T>, NotFound, Fail>;

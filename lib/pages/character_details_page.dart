@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:rick_and_morty/dto/character.dart';
-import 'package:rick_and_morty/util/string_utils.dart';
-
 import '../l10n/app_localizations.dart';
 import '../ui/http_image.dart';
+import '../util/string_utils.dart';
 import '../view_models/character_details_viewmodel.dart';
 
 class CharacterDetailsPage extends StatefulWidget {

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:rick_and_morty/dto/character.dart';
-import 'package:rick_and_morty/util/string_utils.dart';
+import 'package:rick_and_morty_api/dto/character.dart';
 
 import '../model/results.dart';
 import '../mvvm/command.dart';
