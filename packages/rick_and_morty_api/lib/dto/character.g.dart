@@ -37,15 +37,6 @@ const _$CharacterGenderEnumMap = {
   CharacterGender.unknown: 'unknown',
 };
 
-_CharacterLocation _$CharacterLocationFromJson(Map<String, dynamic> json) =>
-    _CharacterLocation(
-      name: json['name'] as String,
-      url: Uri.parse(json['url'] as String),
-    );
-
-Map<String, dynamic> _$CharacterLocationToJson(_CharacterLocation instance) =>
-    <String, dynamic>{'name': instance.name, 'url': instance.url.toString()};
-
 _Character _$CharacterFromJson(Map<String, dynamic> json) => _Character(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
@@ -63,12 +54,16 @@ _Character _$CharacterFromJson(Map<String, dynamic> json) => _Character(
     json['gender'],
     unknownValue: CharacterGender.unknown,
   ),
-  origin: CharacterLocation.fromJson(json['origin'] as Map<String, dynamic>),
-  location: CharacterLocation.fromJson(
+  origin: const _LocationConverter().fromJson(
+    json['origin'] as Map<String, dynamic>,
+  ),
+  location: const _LocationConverter().fromJson(
     json['location'] as Map<String, dynamic>,
   ),
   image: json['image'] as String,
-  episode: (json['episode'] as List<dynamic>).map((e) => e as String).toList(),
+  episode: (json['episode'] as List<dynamic>)
+      .map((e) => Uri.parse(e as String))
+      .toList(),
 );
 
 Map<String, dynamic> _$CharacterToJson(_Character instance) =>
@@ -81,8 +76,8 @@ Map<String, dynamic> _$CharacterToJson(_Character instance) =>
       'species': instance.species,
       'type': instance.type,
       'gender': _$CharacterGenderEnumMap[instance.gender]!,
-      'origin': instance.origin,
-      'location': instance.location,
+      'origin': const _LocationConverter().toJson(instance.origin),
+      'location': const _LocationConverter().toJson(instance.location),
       'image': instance.image,
-      'episode': instance.episode,
+      'episode': instance.episode.map((e) => e.toString()).toList(),
     };

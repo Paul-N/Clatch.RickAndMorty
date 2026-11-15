@@ -11,8 +11,8 @@ import 'package:rick_and_morty/services/compilation_environment_app_config.dart'
 import 'package:rick_and_morty/services/di.dart';
 import 'package:rick_and_morty/rick_and_morty_app.dart';
 import 'package:rick_and_morty/services/rickandmorty_service.dart';
+import 'package:rick_and_morty_api/service/rickandmorty_api.dart';
 import 'package:rick_and_morty_api/service/rickandmorty_rest_api.dart';
-import 'package:rick_and_morty_api/service/rickandmorty_rest_api_impl.dart';
 
 import 'infrastructure/throttled_http_client.dart';
 
@@ -33,13 +33,13 @@ void main() {
     DI.register<Logger>(Logger.root);
     final httpClient = ThrottledHttpClient(_createPlatformClient(), DI.resolveOrCrash<Clock>(), minInterval: const Duration(milliseconds: 335));
     DI.register<http.Client>(httpClient);
-    DI.register<IRickAndMortyRestApi>(RickAndMortyRestApi(
+    DI.register<RickAndMortyApi>(RickAndMortyRestApi(
       client: DI.resolveOrCrash<http.Client>(),
       baseUrl: appConfig.backendHomeUrl,
       //clock: DI.resolveOrCrash<Clock>(),
     ));
     DI.register<IRickAndMortyService>(RickAndMortyService(
-      client: DI.resolveOrCrash<IRickAndMortyRestApi>()
+      client: DI.resolveOrCrash<RickAndMortyApi>()
     ));
 
     DI.register<IAppConfig>(appConfig);

@@ -1,10 +1,7 @@
-import 'package:clock/clock.dart';
 import 'package:http/http.dart' as http;
 import 'package:rick_and_morty_api/errors/api_errors.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rick_and_morty_api/service/rickandmorty_rest_api_impl.dart';
-
-final _clock = Clock();
+import 'package:rick_and_morty_api/service/rickandmorty_rest_api.dart';
 
 void main() {
   group('getCharacters', () {
@@ -74,6 +71,20 @@ void main() {
       expect(response.id, 2);
       expect(response.name, isNotNull);
       expect(response.name.isEmpty, isFalse);
+    });
+    test('returns getCharacter by ids', () async {
+      final api = RickAndMortyRestApi(
+          client: http.Client(),
+          baseUrl: 'https://rickandmortyapi.com'
+      );
+
+      final result = await api.getCharacterByIds([2, 44]);
+
+      expect(result.is1, isTrue);
+      final response = result.as1;
+      expect(response.length, 2);
+      expect(response.elementAt(0), isNotNull);
+      expect(response.elementAt(1), isNotNull);
     });
   });
 }

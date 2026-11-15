@@ -6,6 +6,7 @@ import 'package:rick_and_morty/model/results.dart';
 import 'package:rick_and_morty_api/errors/api_errors.dart';
 import 'package:rick_and_morty_api/dto/character.dart';
 import 'package:rick_and_morty_api/dto/paged_response.dart';
+import 'package:rick_and_morty_api/service/rickandmorty_api.dart';
 import 'package:rick_and_morty_api/service/rickandmorty_rest_api.dart';
 
 typedef MaybeSuccess = Union3<Success, NotFound, Fail>;
@@ -34,7 +35,7 @@ extension ServiceOperationResult<T> on CancelableMaybeData<T> {
 final class RickAndMortyService implements IRickAndMortyService {
   RickAndMortyService({required this._client});
 
-  final IRickAndMortyRestApi _client;
+  final RickAndMortyApi _client;
   CancelableOperation<Object?>? _latestList;
 
   @override

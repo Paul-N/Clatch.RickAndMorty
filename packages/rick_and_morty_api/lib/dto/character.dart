@@ -1,9 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:rick_and_morty_api/dto/resource_base.dart';
+
+import 'character_location.dart';
+import 'location_base.dart';
 
 part 'character.freezed.dart';
 part 'character.g.dart';
 
-/// 1. Enums for String Literals
 enum CharacterStatus {
   @JsonValue('Alive') alive,
   @JsonValue('Dead') dead,
@@ -15,25 +18,6 @@ enum CharacterGender {
   @JsonValue('Male') male,
   @JsonValue('Genderless') genderless,
   @JsonValue('unknown') unknown,
-}
-
-/// 2. Supporting Placeholder Class
-@freezed
-abstract class CharacterLocation with _$CharacterLocation {
-  const factory CharacterLocation({
-    required String name,
-    required Uri url,
-  }) = _CharacterLocation;
-
-  factory CharacterLocation.fromJson(Map<String, dynamic> json) =>
-      _$CharacterLocationFromJson(json);
-}
-
-abstract class ResourceBase {
-  int get id;
-  String get name;
-  Uri get url;
-  DateTime get created;
 }
 
 @freezed
@@ -51,11 +35,11 @@ sealed class Character with _$Character implements ResourceBase {
     @Default('') String type,
     @JsonKey(unknownEnumValue: CharacterGender.unknown)
     required CharacterGender gender,
-    required CharacterLocation origin,
-    required CharacterLocation location,
+    @_LocationConverter() required LocationBase origin,
+    @_LocationConverter() required LocationBase location,
     required String image,
     // Freezed forces this List to be a readonly UnmodifiableListView at runtime
-    required List<String> episode,
+    required List<Uri> episode,
   }) = _Character;
 
   factory Character.fromJson(Map<String, dynamic> json) =>
@@ -79,15 +63,23 @@ class CharacterFilter {
     this.gender,
   });
 
-  // Map<String, Object> toQuery() => {
-  //   if(name != null) 'name': '$name',
-  //   if(type != null) 'type': '$type',
-  //   if(species != null) 'species': '$species',
-  //   //if(species != null) 'species': '$species',
-  // };
-
   Map<String, dynamic> toJson() => _$CharacterFilterToJson(this);
 
   Map<String, String> toQuery() =>
       toJson().map((k, v) => MapEntry(k, v.toString()));
+}
+
+class _LocationConverter
+    implements JsonConverter<LocationBase, Map<String, dynamic>> {
+  const _LocationConverter();
+
+  @override
+  LocationBase fromJson(Map<String, dynamic> json) =>
+      CharacterLocation.fromJson(json);
+
+  @override
+  Map<String, dynamic> toJson(LocationBase object) => {
+    'name': object.name,
+    'url': object.url.toString(),
+  };
 }
