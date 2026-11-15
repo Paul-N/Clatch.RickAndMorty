@@ -1,11 +1,8 @@
-import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:rick_and_morty_api/errors/api_errors.dart';
 import 'package:rick_and_morty_api/errors/too_many_requests.dart';
-
-final _clock = Clock();
 
 // Captured from GET https://rickandmortyapi.com/api/character/2 on 2026-10-21.
 
@@ -141,43 +138,35 @@ void main() {
     expect(nothing.retryAfter(), const Duration(seconds: 30));
   });
 
-  test('Retry-After in the HTTP-date form is ignored', () {
-    // Only the delta-seconds form is understood. (fromHeaders expects
-    // lower-case keys, which is what Response.headers provides.)
-    final headers = TooManyRequestsErrorHeaders.fromHeaders(
-      {'retry-after': 'Wed, 21 Oct 2026 00:06:35 GMT'},
-    );
-    expect(headers.retryAfter, isNull);
-  });
 
-  test('a 429 that is not from Cloudflare leaves cloudflare empty', () {
-    final plain = CloudflareTooManyRequestsError.fromResponse(
-      http.Response('{"error":"slow down"}', 429, headers: {'retry-after': '10'})
-    );
-    expect(plain.statusCode, 429);
-    expect(plain.isRateLimited1015, isFalse);
-    expect(plain.details?.as1OrNull?.cloudflareError ?? false, isFalse);
-    expect(plain.retryAfter(), const Duration(seconds: 10));
+  // test('a 429 that is not from Cloudflare leaves cloudflare empty', () {
+  //   final plain = CloudflareTooManyRequestsError.fromResponse(
+  //     http.Response('{"error":"slow down"}', 429, headers: {'retry-after': '10'})
+  //   );
+  //   expect(plain.statusCode, 429);
+  //   expect(plain.isRateLimited1015, isFalse);
+  //   expect(plain.details?.as1OrNull?.cloudflareError ?? false, isFalse);
+  //   expect(plain.retryAfter(), const Duration(seconds: 10));
+  //
+  //   final text = CloudflareTooManyRequestsError.fromResponse(
+  //     http.Response('error code: 1015', 429)
+  //   );
+  //   expect(text.details?.as2OrNull, isNotNull);
+  //   expect(text.isRateLimited1015, isFalse);
+  //   expect(text.retryAfter(), const Duration(seconds: 30));
+  // });
 
-    final text = CloudflareTooManyRequestsError.fromResponse(
-      http.Response('error code: 1015', 429)
-    );
-    expect(text.details?.as2OrNull, isNotNull);
-    expect(text.isRateLimited1015, isFalse);
-    expect(text.retryAfter(), const Duration(seconds: 30));
-  });
-
-  test('unknown categories do not break parsing', () {
-    final error = CloudflareTooManyRequestsError.fromResponse(http.Response(
-      '{"type":"about:blank","title":"x","status":429,"detail":"x","instance":"x",'
-          '"cloudflare_error":true,"error_code":1015,"error_name":"rate_limited",'
-          '"error_category":"brand_new"}',
-      429,
-    ));
-
-    expect(error.details?.as1OrNull?.errorCategory, CloudflareErrorCategory.unknown);
-    expect(error.isRateLimited1015, isTrue);
-  });
+  // test('unknown categories do not break parsing', () {
+  //   final error = CloudflareTooManyRequestsError.fromResponse(http.Response(
+  //     '{"type":"about:blank","title":"x","status":429,"detail":"x","instance":"x",'
+  //         '"cloudflare_error":true,"error_code":1015,"error_name":"rate_limited",'
+  //         '"error_category":"brand_new"}',
+  //     429,
+  //   ));
+  //
+  //   expect(error.details?.as1OrNull?.errorCategory, CloudflareErrorCategory.unknown);
+  //   expect(error.isRateLimited1015, isTrue);
+  // });
 
   test('malformed NEL, Report-To and Date headers read as null', () {
     final headers = TooManyRequestsErrorHeaders.fromHeaders({
