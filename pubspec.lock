@@ -483,10 +483,11 @@ packages:
   pauln10v_rick_and_morty_api:
     dependency: "direct main"
     description:
-      path: "packages/pauln10v_rick_and_morty_api"
-      relative: true
-    source: path
-    version: "0.0.1"
+      name: pauln10v_rick_and_morty_api
+      sha256: "41c2259541ede8a19c695fdf404f682df9a7986353ffa110c28b85b0f661423c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   plugin_platform_interface:
     dependency: transitive
     description:
