@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
-import 'package:rick_and_morty_api/errors/api_errors.dart';
+import 'package:pauln10v_rick_and_morty_api/errors/api_errors.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rick_and_morty_api/service/rickandmorty_rest_api.dart';
+import 'package:pauln10v_rick_and_morty_api/service/rickandmorty_rest_api.dart';
 
 void main() {
   group('getCharacters', () {

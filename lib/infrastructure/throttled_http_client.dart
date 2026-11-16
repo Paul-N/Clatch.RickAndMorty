@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:clock/clock.dart';
 import 'package:http/http.dart';
-import 'package:rick_and_morty_api/errors/api_errors.dart';
+import 'package:pauln10v_rick_and_morty_api/errors/api_errors.dart';
 import '../rest_api/low_priority.dart';
 
 enum RequestPriority { high, low }

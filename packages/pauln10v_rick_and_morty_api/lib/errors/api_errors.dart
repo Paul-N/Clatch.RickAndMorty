@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:extension_type_unions/extension_type_unions.dart';
 import 'package:http/http.dart' as http;
 import 'package:problem_details/problem_details.dart';
-import 'package:rick_and_morty_api/errors/too_many_requests.dart';
+import 'package:pauln10v_rick_and_morty_api/errors/too_many_requests.dart';
 
 typedef ProblemDetailsOrString = Union2<ProblemDetails, String>;
 

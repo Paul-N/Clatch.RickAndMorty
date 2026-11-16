@@ -11,8 +11,8 @@ import 'package:rick_and_morty/services/compilation_environment_app_config.dart'
 import 'package:rick_and_morty/services/di.dart';
 import 'package:rick_and_morty/rick_and_morty_app.dart';
 import 'package:rick_and_morty/services/rickandmorty_service.dart';
-import 'package:rick_and_morty_api/service/rickandmorty_api.dart';
-import 'package:rick_and_morty_api/service/rickandmorty_rest_api.dart';
+import 'package:pauln10v_rick_and_morty_api/service/rickandmorty_api.dart';
+import 'package:pauln10v_rick_and_morty_api/service/rickandmorty_rest_api.dart';
 
 import 'infrastructure/throttled_http_client.dart';
 

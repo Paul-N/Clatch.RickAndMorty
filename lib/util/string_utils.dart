@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:rick_and_morty_api/dto/character.dart';
+import 'package:pauln10v_rick_and_morty_api/dto/character.dart';
 import '../l10n/app_localizations.dart';
 
 extension DateTimeRelative on DateTime {

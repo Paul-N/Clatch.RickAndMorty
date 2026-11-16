@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:rick_and_morty/model/results.dart';
-import 'package:rick_and_morty_api/dto/character.dart';
-import 'package:rick_and_morty_api/dto/paged_response.dart';
+import 'package:pauln10v_rick_and_morty_api/dto/character.dart';
+import 'package:pauln10v_rick_and_morty_api/dto/paged_response.dart';
 import '../mvvm/command.dart';
 import '../services/rickandmorty_service.dart';
 import 'characters/character_item_viewmodel.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:rick_and_morty_api/errors/api_errors.dart';
-import 'package:rick_and_morty_api/errors/too_many_requests.dart';
+import 'package:pauln10v_rick_and_morty_api/errors/api_errors.dart';
+import 'package:pauln10v_rick_and_morty_api/errors/too_many_requests.dart';
 
 // Captured from GET https://rickandmortyapi.com/api/character/2 on 2026-10-21.
 

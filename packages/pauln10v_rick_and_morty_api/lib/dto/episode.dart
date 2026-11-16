@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rick_and_morty_api/dto/resource_base.dart';
+import 'package:pauln10v_rick_and_morty_api/dto/resource_base.dart';
 part 'episode.freezed.dart';
 part 'episode.g.dart';
 
